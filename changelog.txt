@@ -1,0 +1,51 @@
+Spindle Market Research Hub — Release History
+
+1.8.0 — Research Hub dashboard refinement
+- Refined the modular research dashboard and tabbed frontend navigation.
+- Added the NGX All Share Index chart with 1D, 5D, 1M, and YTD views.
+- Added sector performance visualization.
+- Added market summary modules covering market capitalization, turnover volume/value, macroeconomic indicators, foreign exchange rates, fixed income, and recent dividends.
+- Added price columns to top gainers and top losers.
+- Separated frontend and admin JavaScript/CSS responsibilities.
+- Added the [market_research_dashboard] shortcode.
+- Improved WordPress packaging, documentation, and release structure.
+
+1.7 — Expanded market summary and research workflow
+- Expanded the dashboard beyond reports to include market summaries and structured daily market information.
+- Added fixed-income instrument presentation.
+- Added macroeconomic indicator presentation.
+- Added foreign-exchange rate presentation.
+- Added recent dividend tracking.
+- Added downloadable market summary and daily price-list resources.
+- Expanded the Research Hub navigation to cover the growing research library.
+
+1.6 — Live market data and TradingView integration
+- Added live-market stock data presentation and market data search.
+- Hooked supported market widgets and ticker displays to TradingView.
+- Added dynamic TradingView symbols based on published market gainers and losers.
+- Improved market-data discovery from the Research Hub.
+
+1.5 — Research Hub dashboard
+- Introduced the Research Hub administration dashboard.
+- Added centralized navigation for daily market, equity, sector, macroeconomic, corporate-results, and dividend research.
+- Added dashboard activity and research-management summaries.
+- Added structured administration for the six core report types.
+
+1.4 — Market ticker
+- Added the market ticker experience.
+- Improved presentation of market movement and selected market symbols.
+- Added reusable market ticker output for frontend placements.
+
+1.3 — Gainers and losers enhancement
+- Added stock prices to top-gainer and top-loser displays.
+- Improved percentage-change presentation for daily market movement.
+- Expanded the daily market data structure for clearer equity snapshots.
+
+1.2 — Six reports and downloads
+- Expanded the research library to six report categories.
+- Added downloadable research/report resources.
+- Added structured report management for daily market, equity, sector, macroeconomic, corporate-results, and dividend content.
+
+1.0 — Initial market reports
+- Initial release focused on publishing and organizing market reports in WordPress.
+- Established the foundation for structured financial research content.

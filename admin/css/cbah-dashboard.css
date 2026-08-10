@@ -1,0 +1,4 @@
+/* Research Hub admin dashboard assets. Layout styles remain scoped to the dashboard markup. */
+.cbah-dashboard-wrap .tradingview-widget-container {
+    width: 100%;
+}

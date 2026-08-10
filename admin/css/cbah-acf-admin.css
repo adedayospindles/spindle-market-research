@@ -1,0 +1,28 @@
+/* CSV importer controls */
+.cbah-csv-wrap {
+    margin-top: 8px;
+    font-weight: normal;
+    font-size: 12px;
+}
+
+.cbah-csv-label {
+    background: #0f172a;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+}
+
+.cbah-csv-file {
+    display: none;
+}
+
+.cbah-csv-status {
+    margin-left: 10px;
+    color: #10b981;
+    font-weight: 600;
+}

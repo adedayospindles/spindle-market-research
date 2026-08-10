@@ -1,0 +1,711 @@
+/* =================================================_
+   Global Typography Styles
+   ================================================= */
+
+/* Apply to all paragraphs, spans, and generic text containers (except headings) */
+p, span, div, li, td, th, a, label {
+    font-family: "Josefin Sans", Sans-serif;
+    font-size: 0.9rem;
+    line-height: 1.2em;
+}
+
+/* Explicit override for body text and descriptive elements to match your 1rem size preference */
+.cbah-app-wrapper p, 
+.cbah-app-wrapper span:not(.cbah-snap-label):not(.cbah-snap-change), 
+.cbah-preview-text, 
+.cbah-data-table td {
+    font-size: 0.9rem;
+    line-height: 1.2em;
+}
+
+/* Apply to all headings globally */
+
+.cbah-card-header {
+    font-family: "Libre Caslon Text", Sans-serif;
+    font-size: 0.7rem !important;
+}
+
+
+h1, h2, h3, h4, h5, h6, 
+.cbah-reports-preview h2 {
+    font-family: "Libre Caslon Text", Sans-serif;
+    font-size: 1rem;
+}
+
+/* Core App Wrapper */
+.cbah-app-wrapper {
+	display: flex;
+	font-family:
+		-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica,
+		sans-serif;
+	background-color: #f4f6f9;
+	min-height: 85vh;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	overflow: hidden;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+/* SIDEBAR STYLES (Deep Navy Premium) */
+.cbah-sidebar {
+	width: 240px;
+	background-color: #0f172a;
+	color: #94a3b8;
+	flex-shrink: 0;
+	padding-top: 24px;
+}
+.cbah-nav-item {
+	padding: 14px 22px; /* Reduced padding to fit 7 items */
+	font-size: 13px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	border-left: 4px solid transparent;
+	letter-spacing: 0.3px;
+}
+.cbah-nav-item .dashicons {
+	margin-right: 14px;
+	font-size: 16px; /* Slightly reduced icon size */
+	color: #64748b;
+	transition: 0.2s;
+}
+.cbah-nav-item:hover {
+	background-color: #1e293b;
+	color: #f8fafc;
+}
+.cbah-nav-item.active {
+	background-color: #1e293b;
+	color: #ffffff;
+	border-left-color: #3b82f6;
+	font-weight: 600;
+}
+.cbah-nav-item.active .dashicons {
+	color: #3b82f6;
+}
+
+/* MAIN CONTENT AREA */
+.cbah-main-content {
+	flex-grow: 1;
+	padding: 26px;
+	box-sizing: border-box;
+	background: #f8fafc;
+}
+.cbah-tab-pane {
+	display: none;
+	animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.cbah-tab-pane.active {
+	display: block;
+}
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Grid System */
+.cbah-grid-3 {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 24px;
+	margin-bottom: 24px;
+}
+
+/* Thin Elegant Custom Scrollbar */
+.cbah-scroll-y {
+	overflow-y: auto;
+}
+.cbah-scroll-y::-webkit-scrollbar {
+	width: 6px;
+}
+.cbah-scroll-y::-webkit-scrollbar-track {
+	background: #f1f5f9;
+}
+.cbah-scroll-y::-webkit-scrollbar-thumb {
+	background: #cbd5e1;
+	border-radius: 6px;
+}
+.cbah-scroll-y::-webkit-scrollbar-thumb:hover {
+	background: #94a3b8;
+}
+
+/* Master-Detail Split Layouts (Reports & Market Data) */
+.cbah-reports-layout {
+	display: flex;
+	gap: 24px;
+	align-items: stretch;
+}
+.cbah-reports-list {
+	flex: 1.6;
+	background: #fff;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+	overflow: hidden;
+}
+.cbah-reports-preview {
+	flex: 1;
+	background: #f1f5f9;
+	padding: 32px;
+	border-radius: 6px;
+	border: 1px solid #e2e8f0;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+}
+.cbah-reports-preview h2 {
+	margin-top: 0;
+	color: #0f172a;
+	font-size: 18px;
+	font-weight: 700;
+	border-bottom: 1px solid #cbd5e1;
+	padding-bottom: 16px;
+	margin-bottom: 20px;
+	line-height: 1.4;
+}
+.cbah-preview-text {
+	color: #475569;
+	line-height: 1.7;
+	font-size: 13px;
+	margin-bottom: 30px;
+	flex-grow: 1;
+}
+
+/* Cards */
+.cbah-card {
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	transition: box-shadow 0.2s;
+}
+.cbah-card:hover {
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+.cbah-card-header {
+	background-color: #1e293b;
+	color: #f8fafc;
+	padding: 14px 16px;
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.8px;
+}
+.cbah-card-body {
+	padding: 16px;
+	flex-grow: 1;
+}
+.cbah-card-body.cbah-no-pad {
+	padding: 0;
+}
+
+/* Chart Filters */
+.cbah-chart-filters {
+	text-align: center;
+	margin-bottom: 16px;
+	font-size: 12px;
+	color: #64748b;
+}
+.cbah-chart-filters span {
+	display: inline-block;
+	padding: 4px 12px;
+	margin: 0 4px;
+	border-radius: 16px;
+	cursor: pointer;
+	transition: 0.2s;
+	font-weight: 500;
+}
+.cbah-chart-filters span:hover {
+	background-color: #f1f5f9;
+	color: #0f172a;
+}
+.cbah-chart-filters span.active {
+	background-color: #e2e8f0;
+	color: #0f172a;
+	font-weight: 700;
+}
+
+/* Form Elements */
+.cbah-dropdown-minimal {
+	border: 1px solid #cbd5e1;
+	background: #fff;
+	padding: 4px 8px;
+	font-size: 11px;
+	border-radius: 4px;
+	color: #0f172a;
+	cursor: pointer;
+	outline: none;
+	font-weight: 500;
+}
+.cbah-search-wrapper {
+	display: flex;
+	align-items: center;
+	background: #fff;
+	border-radius: 4px;
+	padding: 2px 10px;
+}
+.cbah-search-input {
+	border: none;
+	outline: none;
+	padding: 6px;
+	font-size: 13px;
+	width: 180px;
+	color: #0f172a;
+}
+
+/* Data Tables */
+.cbah-data-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 0;
+	padding: 0;
+}
+
+.cbah-data-table th:nth-child(1),
+.cbah-data-table td:nth-child(1) {
+	padding-left: 20px;
+} 
+
+.cbah-data-table th:nth-child(3),
+.cbah-data-table td:nth-child(3) {
+	text-align: right;
+} 
+
+.cbah-data-table th:last-child,
+.cbah-data-table td:last-child {
+	text-align: right;
+	padding-right: 20px;
+}
+
+.cbah-data-table th,
+.cbah-data-table td {
+	padding: 11px;
+	text-align: left;
+	font-size: 0.8rem;
+	border-bottom: 1px solid #f1f5f9;
+	color: #334155;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.cbah-data-table th {
+	color: #64748b;
+	font-weight: 600;
+	font-size: 0.7rem;
+	background: #f8fafc;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	white-space: nowrap;
+}
+.cbah-data-table td strong {
+	color: #0f172a;
+	font-weight: 600;
+}
+.cbah-empty {
+	text-align: center !important;
+	color: #94a3b8;
+	font-style: italic;
+	padding: 40px 0 !important;
+}
+
+/* Interactive Table Rows */
+.cbah-table-hover tbody tr {
+	transition: background-color 0.15s ease;
+}
+.cbah-table-hover tbody tr:hover {
+	background-color: #f1f5f9 !important;
+}
+.cbah-table-hover tbody tr:hover td,
+.cbah-table-hover tbody tr:hover td strong {
+	color: #0f172a !important;
+	background-color: transparent !important;
+}
+.cbah-interactive-table tbody tr {
+	cursor: pointer;
+	transition: background 0.15s;
+}
+.cbah-interactive-table tbody tr:hover {
+	background-color: #f1f5f9;
+}
+.cbah-interactive-table tbody tr.active-row {
+	background-color: #e2e8f0;
+	border-left: 3px solid #3b82f6;
+}
+
+/* Micro-elements */
+.cbah-txt-green {
+	color: #10b981;
+	font-weight: 600;
+}
+.cbah-txt-red {
+	color: #ef4444;
+	font-weight: 600;
+}
+.cbah-btn-view {
+	display: inline-block;
+	background: #f1f5f9;
+	color: #0f172a !important;
+	border: 1px solid #cbd5e1;
+	text-decoration: none;
+	padding: 4px 14px;
+	border-radius: 0;
+	font-size: 12px;
+	font-weight: 600;
+	transition: 0.2s;
+}
+.cbah-btn-view:hover {
+	background: #e2e8f0;
+	border-color: #94a3b8;
+}
+.cbah-btn-large {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: #1e293b;
+	color: #fff !important;
+	text-decoration: none;
+	padding: 12px 24px;
+	border-radius: 0;
+	font-weight: 600;
+	transition: 0.2s;
+	font-size: 13px;
+}
+.cbah-btn-large:hover {
+	background: #0f172a;
+	box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+	transform: translateY(-1px);
+}
+
+
+/* Sub-headers for Split Cards */
+.cbah-sub-header {
+    background-color: #f1f5f9;
+    color: #475569;
+    padding: 8px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+/* Quick Select Ticker Pills */
+.cbah-pill-btn {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #0f172a;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem !important;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cbah-pill-btn:hover {
+    background: #1e293b;
+    color: #ffffff;
+    border-color: #1e293b;
+}
+
+
+/* Mobile */
+@media (max-width: 1100px) {
+	.cbah-grid-3 {
+		grid-template-columns: 1fr 1fr;
+	}
+	.cbah-reports-layout {
+		flex-direction: column;
+	}
+}
+@media (max-width: 768px) {
+	.cbah-app-wrapper {
+		flex-direction: column;
+	}
+	.cbah-sidebar {
+		width: 100%;
+		display: flex;
+		overflow-x: auto;
+		padding-top: 0;
+	}
+	.cbah-nav-item {
+		border-left: none;
+		border-bottom: 3px solid transparent;
+		padding: 12px 14px;
+	}
+	.cbah-nav-item.active {
+		border-left-color: transparent;
+		border-bottom-color: #3b82f6;
+	}
+	.cbah-grid-3 {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* Dynamic Market Snap shot **/
+
+.cbah-home-snapshot {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+	background: #ffffff;
+	padding: 24px 30px;
+	border-radius: 6px;
+	border: 1px solid #e2e8f0;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+	justify-content: space-between;
+	align-items: center;
+	font-family:
+		-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+	margin: 20px 0;
+}
+.cbah-snap-item {
+	display: flex;
+	flex-direction: column;
+	min-width: 150px;
+}
+.cbah-snap-label {
+	font-size: 0.8rem;
+	text-transform: uppercase;
+	color: #64748b;
+	font-weight: 600;
+	letter-spacing: 0.8px;
+	margin-bottom: 6px;
+}
+.cbah-snap-value {
+	font-size: 1rem;
+	font-weight: 700;
+	color: #0f172a;
+	margin-bottom: 2px;
+}
+.cbah-snap-change {
+	font-size: 0.9rem;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+}
+.cbah-snap-change .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	margin-right: 4px;
+}
+
+/* Mobile View for Homepage Strip */
+@media (max-width: 768px) {
+	.cbah-home-snapshot {
+		flex-direction: column;
+		align-items: flex-start;
+		padding: 20px;
+	}
+	.cbah-snap-item {
+		width: 100%;
+		border-bottom: 1px solid #f1f5f9;
+		padding-bottom: 12px;
+		margin-bottom: 12px;
+	}
+	.cbah-snap-item:last-child {
+		border-bottom: none;
+		padding-bottom: 0;
+		margin-bottom: 0;
+	}
+}
+
+/* ---- CAPITAL BANCORP TICKER STYLES ---- */
+
+.cbah-ticker-wrapper {
+	width: 100%;
+	max-width: 100%;
+	min-width: 0; /* Stops the ticker from spilling out to the right */
+	position: relative; /* Keeps the overflow strictly contained */
+	overflow: hidden;
+	/*background-color: #0f172a;
+    border-top: 1px solid #1e293b;
+    border-bottom: 1px solid #1e293b;
+    */
+	padding: 12px 0;
+	box-sizing: border-box;
+	display: block; /* Changed from 'flex' to 'block' so the track can animate properly */
+}
+
+.cbah-ticker-track {
+	display: flex;
+	flex-wrap: nowrap; /* Forces items to stay in one horizontal line */
+	width: max-content;
+	/* 35s controls the speed. Increase to 45s if it moves too fast */
+	animation: cbahInfiniteScroll 700s linear infinite;
+}
+
+/* Pause the scrolling when a user hovers over it with their mouse */
+.cbah-ticker-wrapper:hover .cbah-ticker-track {
+	animation-play-state: paused;
+}
+
+.cbah-ticker-group {
+	display: flex;
+	align-items: center;
+	flex-shrink: 0; /* Prevents the browser from squishing the stock names */
+	white-space: nowrap; /* Forces everything onto one horizontal line */
+}
+
+.cbah-ticker-item {
+	font-family: "Josefin Sans", "Segoe UI", sans-serif;
+	color: #0f172a;
+	font-size: 12px;
+	font-weight: 600;
+	padding: 0 10px;
+	display: flex;
+	align-items: center;
+}
+
+.cbah-ticker-item span {
+	margin-left: 3px; /* Space between the stock name and the percentage */
+	font-weight: 700;
+}
+
+/* Green and Red colors specifically for the ticker text */
+.cbah-ticker-item .cbah-txt-green {
+	color: #10b981;
+}
+.cbah-ticker-item .cbah-txt-red {
+	color: #ef4444;
+}
+
+/* The actual scrolling engine */
+@keyframes cbahInfiniteScroll {
+	0% {
+		transform: translateX(0);
+	}
+	100% {
+		transform: translateX(-50%);
+	}
+}
+
+
+/* ==========================================================================
+   WP File Download Plugin Overrides (Inside Report Previews)
+   ========================================================================== */
+
+/* 1. Force the main wrapper to be a clean, uniform block */
+.cbah-preview-text div.wpfd-file,
+.cbah-preview-text div[data-wpfdfile],
+.cbah-preview-text .wpfd-category {
+    display: block !important;
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    padding: 16px !important;
+    margin-top: 20px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    clear: both !important;
+    overflow: hidden !important;
+}
+
+/* 2. Reset any broken inner columns/grids */
+.cbah-preview-text div[data-wpfdfile] > div,
+.cbah-preview-text .wpfd-file > div {
+    display: block !important;
+    width: 100% !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 0 10px 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+/* 3. Fix the Title (Remove the yellow, change to standard dark grey) */
+.cbah-preview-text div[data-wpfdfile] *[class*="title"],
+.cbah-preview-text .wpfd-file *[class*="title"],
+.cbah-preview-text div[data-wpfdfile] a,
+.cbah-preview-text div[data-wpfdfile] h3 {
+    font-family: inherit !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    color: #0f172a !important; /* Standard dark theme color */
+    text-decoration: none !important;
+    text-transform: none !important;
+    display: block !important;
+    margin-bottom: 8px !important;
+}
+
+/* 4. Format the Metadata (Size, Date) neatly in a row */
+.cbah-preview-text div[data-wpfdfile] *[class*="info"],
+.cbah-preview-text div[data-wpfdfile] *[class*="size"],
+.cbah-preview-text div[data-wpfdfile] *[class*="date"],
+.cbah-preview-text .wpfd-file .wpfd-file-meta {
+    font-size: 12px !important;
+    color: #64748b !important;
+    display: inline-block !important;
+    margin-right: 12px !important;
+    margin-bottom: 12px !important;
+}
+
+/* 5. Force buttons into a neat horizontal row */
+.cbah-preview-text div[data-wpfdfile] .wpfd-buttons,
+.cbah-preview-text div[data-wpfdfile] > div:last-child {
+    display: flex !important;
+    gap: 10px !important;
+    margin-top: 12px !important;
+    flex-wrap: wrap !important;
+    border-top: 1px solid #e2e8f0 !important;
+    padding-top: 12px !important;
+}
+
+/* 6. Style the plugin's buttons to match our Dashboard UI */
+.cbah-preview-text div[data-wpfdfile] a.btn,
+.cbah-preview-text div[data-wpfdfile] a[href*="task=download"],
+.cbah-preview-text div[data-wpfdfile] a[href*="task=preview"] {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 8px 16px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+    text-transform: capitalize !important;
+    box-shadow: none !important;
+}
+
+/* 7. Specific color for the DOWNLOAD button */
+.cbah-preview-text div[data-wpfdfile] a[href*="task=download"] {
+    background: #1e293b !important;
+    color: #ffffff !important;
+    border: 1px solid #1e293b !important;
+}
+.cbah-preview-text div[data-wpfdfile] a[href*="task=download"]:hover {
+    background: #334155 !important;
+}
+
+/* 8. Specific color for the PREVIEW button */
+.cbah-preview-text div[data-wpfdfile] a[href*="task=preview"] {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+}
+.cbah-preview-text div[data-wpfdfile] a[href*="task=preview"]:hover {
+    background: #f8fafc !important;
+}
+
+/* Hide giant SVG/Image icons if they load */
+.cbah-preview-text div[data-wpfdfile] img[src*="wp-file-download"] {
+    display: none !important;
+}
+
+

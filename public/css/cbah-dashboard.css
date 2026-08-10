@@ -1,0 +1,39 @@
+/* Force sleek, visible scrollbars on scrollable areas */
+            .cbah-scroll-y::-webkit-scrollbar, .cbah-reports-preview::-webkit-scrollbar {
+                width: 6px;
+                display: block;
+            }
+            .cbah-scroll-y::-webkit-scrollbar-track, .cbah-reports-preview::-webkit-scrollbar-track {
+                background: #f1f5f9;
+                border-radius: 4px;
+            }
+            .cbah-scroll-y::-webkit-scrollbar-thumb, .cbah-reports-preview::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 4px;
+            }
+            .cbah-scroll-y::-webkit-scrollbar-thumb:hover, .cbah-reports-preview::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            }
+            
+            /* Dynamic inline CSS for new UI elements so you don't have to touch your stylesheet */
+            .cbah-sub-header { background-color: #f1f5f9; color: #475569; padding: 8px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; border-bottom: 1px solid #e2e8f0; }
+            .cbah-pill-btn { background: #ffffff; border: 1px solid #cbd5e1; color: #0f172a; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+            .cbah-pill-btn:hover { background: #1e293b; color: #ffffff; border-color: #1e293b; }
+            
+            /* Force WP File Download Blocks to look clean and compact */
+            .cbah-preview-text [class*="wpfd-file"], 
+            .cbah-preview-text .wpfd-category {
+                display: flex !important; flex-direction: row !important; align-items: center !important;
+                background: #f8fafc !important; border: 1px solid #cbd5e1 !important;
+                padding: 10px 15px !important; border-radius: 6px !important; margin-top: 15px !important;
+                width: fit-content !important; min-width: 250px; text-decoration: none !important;
+            }
+            .cbah-preview-text [class*="wpfd-file"] img, .cbah-preview-text [class*="wpfd-icon"] {
+                width: 24px !important; height: auto !important; margin: 0 12px 0 0 !important; padding: 0 !important;
+            }
+            .cbah-preview-text [class*="wpfd-title"] {
+                font-size: 13px !important; font-weight: 700 !important; color: #0f172a !important; margin: 0 !important;
+            }
+            .cbah-preview-text [class*="wpfd-file-info"], .cbah-preview-text [class*="wpfd-file-meta"] {
+                display: none !important; /* Hides Hits, Date, Size */
+            }
