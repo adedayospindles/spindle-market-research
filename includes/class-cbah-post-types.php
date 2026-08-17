@@ -188,7 +188,7 @@ class CBAH_Post_Types {
             
             <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px;">
                 <div>
-                    <h1 style="font-weight: 700; font-size: 28px; color: #0f172a; margin: 0 0 8px 0;">Capital Bancorp Research Hub</h1>
+                    <h1 style="font-weight: 700; font-size: 28px; color: #0f172a; margin: 0 0 8px 0;"><?php echo esc_html( get_bloginfo( 'name' ) ); ?> Research Hub</h1>
                     <p style="margin: 0; font-size: 15px; color: #64748b;">
                         <?php echo esc_html("$greeting, $user_name. Here is your platform overview for $current_date."); ?>
                     </p>
