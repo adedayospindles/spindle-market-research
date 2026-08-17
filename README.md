@@ -7,11 +7,10 @@ Stable tag: 1.8.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Financial research dashboard for NGX market data, reports, stock charts, dividends, sector performance, and macroeconomic indicators.
-
+Market research dashboard for NGX market data, reports, stock charts, dividends, sector performance, and macroeconomic indicators.
 == Description ==
 
-Spindle Market Research Hub provides a structured research and market-data workspace for WordPress.
+Spindle Market Research Hub provides a structured research and market-data workspace for WordPress. A modular financial research dashboard for WordPress, built for publishing market reports, equity research, sector reports, macroeconomic reports, corporate results, dividend records, and market summary data.
 
 Features include:
 
@@ -39,15 +38,17 @@ This plugin can connect to third-party services to provide market visualization 
 TradingView is used for embedded market widgets and market-data visualizations where enabled by the plugin. TradingView may receive the visitor's browser request when a TradingView widget is displayed.
 
 Service: https://www.tradingview.com/
-Terms: https://www.tradingview.com/legal/terms/
-Privacy: https://www.tradingview.com/policies/
+Terms of use: https://www.tradingview.com/policies/
+Privacy: https://www.tradingview.com/privacy-policy/ 
 
 = Chart.js =
 
-Chart.js 4.4.1 is bundled locally with the plugin and is used for frontend market charts. No Chart.js JavaScript is loaded from a third-party CDN.
+Chart.js 4.5.1 is bundled locally with the plugin and is used by the frontend charting layer.
 
 Chart.js project: https://www.chartjs.org/
 License: https://github.com/chartjs/Chart.js/blob/master/LICENSE.md
+
+For WordPress.org directory distribution, non-service JavaScript dependencies should be bundled with the plugin rather than loaded from a third-party CDN.
 
 = Source Code =
 
@@ -65,25 +66,60 @@ Source code and development history: https://github.com/adedayospindles/spindle-
 2. Upload the Spindle Market Research Hub plugin to `/wp-content/plugins/`.
 3. Activate the plugin from Plugins in WordPress.
 4. Create and populate the supported research post types from the Research Hub menu.
-5. Add the shortcode `[market_research_dashboard]` to the page where the public research dashboard should appear.
+5. Add one of the plugin's shortcodes to the page, post, or widget area where you want the research content to appear.
+
+== Shortcodes ==
+
+The plugin provides three frontend shortcodes:
+
+`[market_research_dashboard]`
+Displays the full Market Research dashboard, including the dashboard tabs, NGX All Share Index chart, sector performance, market data, reports, price lists, market summaries, corporate results, dividends, and market-data search.
+
+`[market_research_home_snapshot]`
+Displays a compact market snapshot with key NGX market indicators, top gainer, top loser, and market turnover information.
+
+`[market_research_price_ticker]`
+Displays the market price ticker with supported NGX market movement information.
+
+Use the shortcodes independently. You do not need to place all three on the same page.
 
 == Frequently Asked Questions ==
 
-= What shortcode displays the research dashboard? =
+= What shortcodes are available? =
 
-Use `[market_research_dashboard]`.
+The plugin provides three shortcodes:
+
+* `[market_research_dashboard]` — Full Market Research dashboard.
+* `[market_research_home_snapshot]` — Compact market snapshot.
+* `[market_research_price_ticker]` — Market price ticker.
+
+= How do I display the full Market Research dashboard? =
+
+Add `[market_research_dashboard]` to the page or post where you want the full dashboard to appear.
+
+= How do I display the market snapshot? =
+
+Add `[market_research_home_snapshot]` to the page, post, or widget area where you want the compact market snapshot to appear.
+
+= How do I display the market price ticker? =
+
+Add `[market_research_price_ticker]` to the page, post, or widget area where you want the market ticker to appear.
 
 = Does the plugin require ACF PRO? =
 
-Yes. Advanced Custom Fields PRO is required because the plugin registers and uses structured fields including repeaters.
+Yes. Advanced Custom Fields PRO is required because the plugin registers and uses structured fields, including repeater fields, for the research data.
 
-= Does the plugin automatically provide live NGX prices? =
+= Does the plugin provide market charts? =
 
-The plugin provides fields and TradingView integrations for market-data presentation. It does not claim to be an independent exchange data feed.
+Yes. The dashboard includes an NGX All Share Index chart with 1D, 5D, 1M, and YTD views, as well as sector performance visualization. Chart.js is bundled locally with the plugin.
 
-= Does the plugin send personal information to third parties? =
+= Does the plugin integrate with TradingView? =
 
-The plugin does not intentionally collect visitor personal information for analytics or tracking. TradingView widgets may make requests to TradingView when displayed. See the External Services section above.
+Yes. Supported market-data search and visualizations use TradingView integrations. TradingView may make requests from the visitor's browser when its widgets or charts are displayed. See the External Services section for details.
+
+= Can I use the three shortcodes separately? =
+
+Yes. Each shortcode renders a different frontend component and can be placed independently on pages, posts, or other WordPress areas that support shortcodes.
 
 == Screenshots ==
 
@@ -91,8 +127,8 @@ The plugin does not intentionally collect visitor personal information for analy
 2. Dividend Tracker displaying company tickers, dividend amounts, closure dates, and payment dates.
 3. Macro Reports directory with report previews, downloads, key indicators, and government-policy information.
 4. Market Data Search with NGX stock lookup, quick symbols, and a live TradingView price chart.
-5. Market dashboard showing the NGX All Share Index, top gainers, top losers, sector performance, fixed income, and equity market turnover and size.
-6. Public-facing market snapshot showing live market indicators, top gainer and loser data, and market turnover.
+5. Market dashboard showing the NGX All Share Index, top gainers, top losers, sector performance, fixed income, turnover, and market capitalization.
+6. Public-facing market snapshot showing live market indicators, gainers, losers, turnover, and related NGX information.
 
 == Changelog ==
 
