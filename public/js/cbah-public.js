@@ -1,5 +1,11 @@
 const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData) || { hist: {} };
 
+function cbahSetVisible(element, visible) {
+    if (!element) return;
+    element.classList.toggle('cbah-is-visible', !!visible);
+    element.classList.toggle('cbah-is-hidden', !visible);
+}
+
         function cbahLoadReport(row) {
             document.querySelectorAll('.cbah-interactive-table tr').forEach(r => r.classList.remove('active-row'));
             row.classList.add('active-row');
@@ -9,10 +15,10 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
             let file = row.getAttribute('data-file');
             let actionWrap = document.getElementById('rep-preview-actions');
             if(file && file !== '#') { 
-                actionWrap.style.display = 'flex'; 
+                cbahSetVisible(actionWrap, true); 
                 document.getElementById('rep-preview-dl-btn').href = file; 
                 document.getElementById('rep-preview-view-btn').href = file; 
-            } else { actionWrap.style.display = 'none'; }
+            } else { cbahSetVisible(actionWrap, false); }
         }
         
         function cbahLoadSectorPost(row) {
@@ -23,10 +29,10 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
             let mainPdf = row.getAttribute('data-mainpdf');
             let actionWrap = document.getElementById('sec-preview-actions');
             if(mainPdf && mainPdf !== '#') { 
-                actionWrap.style.display = 'flex'; 
+                cbahSetVisible(actionWrap, true); 
                 document.getElementById('sec-preview-main-btn').href = mainPdf; 
                 document.getElementById('sec-preview-view-btn').href = mainPdf; 
-            } else { actionWrap.style.display = 'none'; }
+            } else { cbahSetVisible(actionWrap, false); }
             
             let payload = row.querySelector('.hidden-payload');
             document.getElementById('sec-preview-content').innerHTML = payload.querySelector('.sp-content').innerHTML;
@@ -39,7 +45,7 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
             panesContainer.innerHTML = '';
 
             if(sectorCards.length > 0) {
-                tabsBar.style.display = 'flex';
+                tabsBar.classList.add('cbah-is-visible');
                 sectorCards.forEach((card, index) => {
                     let sectorName = card.getAttribute('data-name');
                     let tabId = 'sec-pane-' + index;
@@ -48,50 +54,46 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
                     tabSpan.className = 'cbah-sec-tab ' + (index === 0 ? 'active' : '');
                     tabSpan.setAttribute('data-target', tabId);
                     tabSpan.innerText = sectorName;
-                    tabSpan.style.cssText = "cursor:pointer; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; font-weight:700; padding-bottom:10px; margin-bottom:-1px; border-bottom:2px solid " + (index === 0 ? '#3b82f6' : 'transparent') + "; color:" + (index === 0 ? '#0f172a' : '#64748b') + ";";
                     tabsBar.appendChild(tabSpan);
 
                     let paneDiv = document.createElement('div');
                     paneDiv.id = tabId;
                     paneDiv.className = 'cbah-sec-pane';
-                    paneDiv.style.cssText = "display:" + (index === 0 ? 'block' : 'none') + "; background:#ffffff; padding:20px; border:1px solid #e2e8f0; border-radius:6px; color:#334155; font-size:13px; line-height:1.6;";
+                    if (index === 0) { paneDiv.classList.add('active'); }
                     paneDiv.innerHTML = card.innerHTML;
                     panesContainer.appendChild(paneDiv);
                 });
 
                 document.querySelectorAll('.cbah-sec-tab').forEach(tab => {
                     tab.addEventListener('click', function() {
-                        document.querySelectorAll('.cbah-sec-tab').forEach(t => { 
+                        document.querySelectorAll('.cbah-sec-tab').forEach(t => {
                             t.classList.remove('active');
-                            t.style.color = '#64748b'; 
-                            t.style.borderBottomColor = 'transparent'; 
                         });
                         this.classList.add('active');
-                        this.style.color = '#0f172a'; 
-                        this.style.borderBottomColor = '#3b82f6';
                         
-                        document.querySelectorAll('.cbah-sec-pane').forEach(p => p.style.display = 'none');
-                        document.getElementById(this.dataset.target).style.display = 'block';
+                        document.querySelectorAll('.cbah-sec-pane').forEach(p => p.classList.remove('active'));
+                        document.getElementById(this.dataset.target).classList.add('active');
                     });
                 });
             } else {
-                tabsBar.style.display = 'none';
-                panesContainer.innerHTML = '<p style="color:#64748b; font-style:italic;">No sector breakdowns provided for this report.</p>';
+                tabsBar.classList.remove('cbah-is-visible');
+                panesContainer.innerHTML = '<p class="cbah-empty-sector">No sector breakdowns provided for this report.</p>';
             }
         }
         
         function cbahLoadMacroPost(row) {
-            document.querySelectorAll('#macro-reports-list tr').forEach(r => r.classList.remove('active-row'));
+            const macroSection = row.closest('.cbah-tab-pane') || document;
+            macroSection.querySelectorAll('#macro-reports-list tr').forEach(r => r.classList.remove('active-row'));
             row.classList.add('active-row');
             document.getElementById('mac-preview-title').innerText = row.getAttribute('data-title');
             
             let file = row.getAttribute('data-file');
             let actionWrap = document.getElementById('mac-preview-actions');
             if(file && file !== '#') { 
-                actionWrap.style.display = 'flex'; 
+                cbahSetVisible(actionWrap, true); 
                 document.getElementById('mac-preview-dl-btn').href = file; 
                 document.getElementById('mac-preview-view-btn').href = file; 
-            } else { actionWrap.style.display = 'none'; }
+            } else { cbahSetVisible(actionWrap, false); }
             
             let payload = row.querySelector('.hidden-payload');
             document.getElementById('mac-preview-content').innerHTML = payload.querySelector('.mac-content').innerHTML;
@@ -100,21 +102,20 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
             document.getElementById('mac-val-crude').innerText = payload.querySelector('.mac-crude').innerText;
             document.getElementById('mac-val-gov').innerHTML = payload.querySelector('.mac-gov').innerHTML;
 
-            document.querySelectorAll('.cbah-mac-tab').forEach(t => {
+            const macroPreview = row.closest('.cbah-reports-preview') || document;
+            macroPreview.querySelectorAll('.cbah-mac-tab').forEach(t => {
                 t.classList.remove('active');
-                t.style.color = '#64748b'; 
-                t.style.borderBottomColor = 'transparent';
+                t.setAttribute('aria-selected', 'false');
             });
-            let firstTab = document.querySelector('.cbah-mac-tab[data-target="mac-tab-indicators"]');
+            let firstTab = macroPreview.querySelector('.cbah-mac-tab[data-target="mac-tab-indicators"]');
             if(firstTab) {
                 firstTab.classList.add('active');
-                firstTab.style.color = '#0f172a'; 
-                firstTab.style.borderBottomColor = '#3b82f6';
+                firstTab.setAttribute('aria-selected', 'true');
             }
             
-            document.querySelectorAll('.cbah-mac-pane').forEach(p => p.style.display = 'none');
-            let indPane = document.getElementById('mac-tab-indicators');
-            if(indPane) indPane.style.display = 'block';
+            macroPreview.querySelectorAll('.cbah-mac-pane').forEach(p => p.classList.remove('active'));
+            let indPane = macroPreview.querySelector('#mac-tab-indicators');
+            if(indPane) indPane.classList.add('active');
         }
         
         function cbahTriggerSearch(ticker) {
@@ -128,9 +129,20 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
         function cbahExecuteStockSearch(val) {
             if (!val) return;
             val = val.toUpperCase();
-            document.getElementById('market-data-highlight').innerHTML = `<h3>${val}</h3><p style="color:#10b981; font-weight:600;">Active Symbol</p><p style="color:#64748b; font-size:12px;">Displaying live charts via TradingView engine.</p>`;
+            const highlight = document.getElementById('market-data-highlight');
+            if (highlight) {
+                highlight.innerHTML = '';
+                const heading = document.createElement('h3');
+                heading.textContent = val;
+                heading.className = 'cbah-market-symbol-title';
+                const meta = document.createElement('p');
+                meta.textContent = 'Active Symbol';
+                meta.className = 'cbah-active-symbol';
+                highlight.appendChild(heading);
+                highlight.appendChild(meta);
+            }
             const chartContainer = document.getElementById('market-data-chart');
-            chartContainer.innerHTML = '<div id="tv_chart_container" style="height:400px; width:100%;"></div>';
+            chartContainer.innerHTML = '<div id="tv_chart_container" class="cbah-tv-chart-container"></div>';
 
             new TradingView.widget({
                 "autosize": true,
@@ -146,30 +158,38 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
 
         document.addEventListener("DOMContentLoaded", function() {
             // 1. Sidebar Tabs
-            document.querySelectorAll('.cbah-nav-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    document.querySelectorAll('.cbah-nav-item, .cbah-tab-pane').forEach(el => el.classList.remove('active'));
-                    this.classList.add('active');
-                    document.getElementById(this.dataset.tab).classList.add('active');
+            document.querySelectorAll('.cbah-app-wrapper').forEach(app => {
+                app.querySelectorAll('.cbah-nav-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const target = app.querySelector('#' + CSS.escape(this.dataset.tab));
+                        if (!target) return;
+                        app.querySelectorAll('.cbah-nav-item, .cbah-tab-pane').forEach(el => el.classList.remove('active'));
+                        this.classList.add('active');
+                        target.classList.add('active');
+                    });
                 });
             });
 
             // Macro Mini Tabs Logic
-            document.querySelectorAll('.cbah-mac-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    document.querySelectorAll('.cbah-mac-tab').forEach(t => { 
-                        t.classList.remove('active');
-                        t.style.color = '#64748b'; 
-                        t.style.borderBottomColor = 'transparent'; 
-                    });
-                    
-                    this.classList.add('active');
-                    this.style.color = '#0f172a'; 
-                    this.style.borderBottomColor = '#3b82f6';
-                    
-                    document.querySelectorAll('.cbah-mac-pane').forEach(p => p.style.display = 'none');
-                    document.getElementById(this.dataset.target).style.display = 'block';
+            document.addEventListener('click', function(event) {
+                const tab = event.target.closest('.cbah-mac-tab');
+                if (!tab) return;
+
+                const targetId = tab.getAttribute('data-target');
+                const preview = tab.closest('.cbah-reports-preview');
+                const targetPane = preview ? preview.querySelector('#' + CSS.escape(targetId)) : document.getElementById(targetId);
+                if (!targetPane) return;
+
+                const tabScope = preview || document;
+                tabScope.querySelectorAll('.cbah-mac-tab').forEach(t => {
+                    t.classList.remove('active');
+                    t.setAttribute('aria-selected', 'false');
                 });
+                tabScope.querySelectorAll('.cbah-mac-pane').forEach(p => p.classList.remove('active'));
+
+                tab.classList.add('active');
+                tab.setAttribute('aria-selected', 'true');
+                targetPane.classList.add('active');
             });
 
             // Auto-load First Items for Master-Detail views
@@ -188,8 +208,7 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
                 fixedFilter.addEventListener('change', function() {
                     let filter = this.value;
                     document.querySelectorAll('#cbah_table_fixed tr').forEach(tr => {
-                        if(filter === 'all') { tr.style.display = ''; } 
-                        else { tr.style.display = (tr.getAttribute('data-type') === filter) ? '' : 'none'; }
+                        cbahSetVisible(tr, filter === 'all' || tr.getAttribute('data-type') === filter);
                     });
                 });
             }
@@ -218,6 +237,7 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
             });
 
             // 4. Charts Initialization (5D default initial state)
+            const cbahChartFont = getComputedStyle(document.documentElement).getPropertyValue('--cbah-body-font').trim() || '"Josefin Sans", sans-serif';
             const marketCanvas = document.getElementById('cbahMarketChart');
             let marketChart = null;
             if (marketCanvas) {
@@ -232,7 +252,7 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
                             x: { display: false },
                             y: {
                                 ticks: {
-                                    font: { family: "'Josefin Sans', sans-serif", size: 12 },
+                                    font: { family: cbahChartFont, size: 12 },
                                     color: '#334155'
                                 }
                             }
@@ -278,14 +298,14 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
                         },
                         scales: {
                             x: {
-                                ticks: { font: { family: "'Josefin Sans', sans-serif", size: 11 }, color: '#334155' }
+                                ticks: { font: { family: cbahChartFont, size: 11 }, color: '#334155' }
                             },
                             y: {
                                 title: {
                                     display: true,
                                     text: '%',
                                     align: 'end', // Positions the '%' sign cleanly at the top of the axis line
-                                    font: { family: "'Josefin Sans', sans-serif", size: 12, weight: 'bold' },
+                                    font: { family: cbahChartFont, size: 12, weight: 'bold' },
                                     color: '#334155',
                                     padding: { bottom: 4 }
                                 },
@@ -302,7 +322,7 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
                                     }
                                 },
                                 ticks: { 
-                                    font: { family: "'Josefin Sans', sans-serif", size: 12 }, 
+                                    font: { family: cbahChartFont, size: 12 }, 
                                     color: '#334155'
                                 }
                             }
@@ -351,8 +371,8 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
                             let cleanPct = item.percentage.toString().replace(/[\+\-\%\s]/g, '');
                             gHtml += `<tr>
                                 <td><strong>${item.ticker}</strong></td>
-                                <td style="text-align:center; color:#64748b;">${item.price}</td>
-                                <td style="text-align:right; padding-right: 10px;" class="cbah-txt-green">+${cleanPct}%</td>
+                                <td class="cbah-table-price-value">${item.price}</td>
+                                <td class="cbah-table-value cbah-txt-green">+${cleanPct}%</td>
                             </tr>`; 
                         });
                     } else { gHtml = '<tr><td colspan="3" class="cbah-empty">No Data</td></tr>'; }
@@ -365,8 +385,8 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
                             let cleanPct = item.percentage.toString().replace(/[\+\-\%\s]/g, '');
                             lHtml += `<tr>
                                 <td><strong>${item.ticker}</strong></td>
-                                <td style="text-align:center; color:#64748b;">${item.price}</td>
-                                <td style="text-align:right; padding-right: 10px;" class="cbah-txt-red">-${cleanPct}%</td>
+                                <td class="cbah-table-price-value">${item.price}</td>
+                                <td class="cbah-table-value cbah-txt-red">-${cleanPct}%</td>
                             </tr>`; 
                         });
                     } else { lHtml = '<tr><td colspan="3" class="cbah-empty">No Data</td></tr>'; }

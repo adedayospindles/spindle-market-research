@@ -1,3 +1,30 @@
+Spindle Market Research Hub 1.8.1
+
+1.8.1 — Current release
+- Added consistent spacing between the Research Categories icons and section names in the admin dashboard.
+- Standardized report date-column alignment so date headings and populated dates share the same right edge across report directories.
+- Replaced non-functional dashboard Analyst Resources links with working Research Hub destinations.
+- Preserved existing report View/Download functionality and button labels.
+- Restored report inner-tab presentation/interaction rules and standardized report action-button wrapping without removing existing report functionality.
+- Removed the obsolete TradingView explanatory line from Market Data Search.
+- Synchronized macro inner-tab active state and visible content.
+- Hardened ticker fallback, initialization, continuous scrolling, short-list repetition, and responsive left anchoring.
+- Added administrator-controlled ticker speed independent of the number of gainers or losers.
+- Moved Ticker Speed into its own Ticker Settings section in Research Hub Settings; ticker behavior and saved values remain unchanged.
+- Improved Google Fonts controls with Body / Text Font and Heading Font dropdowns plus independent admin-area toggles.
+- Kept the general Heading Font default as Poppins while snapshot labels and values use the Body / Text family by design.
+- Added and guarded the ACF PRO dependency notice and ACF-powered functionality when the dependency is unavailable.
+- Centered the complete four-column market snapshot group on larger screens and reduced the gap between its sections while preserving responsive behavior.
+- Removed the duplicate-looking divider around Market Turnover & Size and standardized the intended divider before that section.
+- Reworked Volume, Value, and Cap as equal-width metric cells with responsive spacing to prevent overlap on inner pages.
+- Kept Volume | Value | Cap on one line with the corresponding values directly underneath; unsupplied metrics are omitted without stray separators.
+- Slightly reduced Top Gainer and Top Loser snapshot value font sizes.
+- Standardized View Report and Download Report typography and kept both action labels on a single line.
+- Tightened dashboard top-gainer/top-loser table spacing and isolated market-mover sizing and presentation styles.
+- Extracted remaining dashboard/presentation inline CSS into scoped stylesheet classes without changing the underlying functionality.
+- Updated the Settings page title to use the WordPress site title followed by “Research Hub Settings”, with “Market Research Hub Settings” as the fallback when no site title is available.
+- Preserved existing shortcodes, report data handling, market-data processing, JavaScript behavior, and frontend/admin functionality.
+
 Spindle Market Research Hub — Release History
 
 1.8.0 — Research Hub dashboard refinement

@@ -1,0 +1,30 @@
+/* Scoped typography for Spindle Market Research Hub admin screens. */
+body.cbah-plugin-admin-screen.cbah-admin-use-body-font #wpbody-content,
+body.cbah-plugin-admin-screen.cbah-admin-use-body-font #wpbody-content input,
+body.cbah-plugin-admin-screen.cbah-admin-use-body-font #wpbody-content textarea,
+body.cbah-plugin-admin-screen.cbah-admin-use-body-font #wpbody-content select,
+body.cbah-plugin-admin-screen.cbah-admin-use-body-font #wpbody-content button,
+body.cbah-plugin-admin-screen.cbah-admin-use-body-font #wpbody-content table,
+body.cbah-plugin-admin-screen.cbah-admin-use-body-font .cbah-settings-wrap,
+body.cbah-plugin-admin-screen.cbah-admin-use-body-font .cbah-settings-wrap input,
+body.cbah-plugin-admin-screen.cbah-admin-use-body-font .cbah-settings-wrap select,
+body.cbah-plugin-admin-screen.cbah-admin-use-body-font .cbah-settings-wrap textarea,
+body.cbah-plugin-admin-screen.cbah-admin-use-body-font .cbah-dashboard-wrap {
+    font-family: var(--cbah-admin-body-font) !important;
+}
+
+body.cbah-plugin-admin-screen.cbah-admin-use-heading-font #wpbody-content h1,
+body.cbah-plugin-admin-screen.cbah-admin-use-heading-font #wpbody-content h2,
+body.cbah-plugin-admin-screen.cbah-admin-use-heading-font #wpbody-content h3,
+body.cbah-plugin-admin-screen.cbah-admin-use-heading-font #wpbody-content h4,
+body.cbah-plugin-admin-screen.cbah-admin-use-heading-font #wpbody-content h5,
+body.cbah-plugin-admin-screen.cbah-admin-use-heading-font #wpbody-content .acf-field .acf-label label,
+body.cbah-plugin-admin-screen.cbah-admin-use-heading-font .cbah-settings-wrap h1,
+body.cbah-plugin-admin-screen.cbah-admin-use-heading-font .cbah-settings-wrap h2,
+body.cbah-plugin-admin-screen.cbah-admin-use-heading-font .cbah-settings-wrap h3,
+body.cbah-plugin-admin-screen.cbah-admin-use-heading-font .cbah-dashboard-wrap h1,
+body.cbah-plugin-admin-screen.cbah-admin-use-heading-font .cbah-dashboard-wrap h2,
+body.cbah-plugin-admin-screen.cbah-admin-use-heading-font .cbah-dashboard-wrap h3,
+body.cbah-plugin-admin-screen.cbah-admin-use-heading-font .cbah-dashboard-wrap h4 {
+    font-family: var(--cbah-admin-heading-font) !important;
+}

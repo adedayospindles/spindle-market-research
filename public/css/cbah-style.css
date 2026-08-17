@@ -1,43 +1,46 @@
 /* =================================================_
-   Global Typography Styles
+   Scoped Typography Styles
    ================================================= */
 
-/* Apply to all paragraphs, spans, and generic text containers (except headings) */
-p, span, div, li, td, th, a, label {
-    font-family: "Josefin Sans", Sans-serif;
+/* Never style the host theme globally. Dashboard typography is scoped to the plugin app. */
+.cbah-app-wrapper {
+    font-family: var(--cbah-body-font, "Josefin Sans", sans-serif);
+}
+
+.cbah-app-wrapper p,
+.cbah-app-wrapper li,
+.cbah-app-wrapper td,
+.cbah-app-wrapper th,
+.cbah-app-wrapper label {
     font-size: 0.9rem;
     line-height: 1.2em;
 }
 
-/* Explicit override for body text and descriptive elements to match your 1rem size preference */
-.cbah-app-wrapper p, 
-.cbah-app-wrapper span:not(.cbah-snap-label):not(.cbah-snap-change), 
-.cbah-preview-text, 
-.cbah-data-table td {
-    font-size: 0.9rem;
-    line-height: 1.2em;
+.cbah-app-wrapper h1,
+.cbah-app-wrapper h2,
+.cbah-app-wrapper h3,
+.cbah-app-wrapper h4,
+.cbah-app-wrapper h5,
+.cbah-app-wrapper h6,
+.cbah-reports-preview h2 {
+    font-family: var(--cbah-heading-font, "Josefin Sans", sans-serif);
+    font-size: 1rem;
 }
-
-/* Apply to all headings globally */
 
 .cbah-card-header {
-    font-family: "Libre Caslon Text", Sans-serif;
+    font-family: var(--cbah-heading-font, "Josefin Sans", sans-serif);
     font-size: 0.7rem !important;
 }
 
 
-h1, h2, h3, h4, h5, h6, 
-.cbah-reports-preview h2 {
-    font-family: "Libre Caslon Text", Sans-serif;
-    font-size: 1rem;
+.cbah-fixed-income-label {
+    font-family: var(--cbah-heading-font, "Josefin Sans", sans-serif);
+    font-size: 0.7rem;
 }
-
 /* Core App Wrapper */
 .cbah-app-wrapper {
 	display: flex;
-	font-family:
-		-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica,
-		sans-serif;
+	font-family: var(--cbah-body-font, "Josefin Sans", sans-serif);
 	background-color: #f4f6f9;
 	min-height: 85vh;
 	border: 1px solid #e2e8f0;
@@ -176,6 +179,29 @@ h1, h2, h3, h4, h5, h6,
 	font-size: 13px;
 	margin-bottom: 30px;
 	flex-grow: 1;
+}
+
+/* Report directory date column: keep heading and populated dates on the same right edge. */
+.cbah-reports-list .cbah-data-table thead th:nth-child(2),
+.cbah-reports-list .cbah-data-table tbody td:nth-child(2) {
+    text-align: right !important;
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+}
+
+.cbah-reports-list .cbah-data-table tbody td:nth-child(2) a,
+.cbah-reports-list .cbah-data-table tbody td:nth-child(2) span {
+    white-space: nowrap !important;
+}
+
+/* Keep report action buttons visually consistent without changing their labels. */
+.cbah-reports-list .cbah-report-actions .cbah-download-report,
+.cbah-reports-preview .cbah-download-report {
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 12px !important;
 }
 
 /* Cards */
@@ -388,6 +414,31 @@ h1, h2, h3, h4, h5, h6,
 	transform: translateY(-1px);
 }
 
+/* All plugin download actions use the same visual treatment as the Equity Reports download button. */
+.cbah-btn-download {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	background: #1e293b !important;
+	color: #fff !important;
+	text-decoration: none !important;
+	padding: 10px 18px !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	font-size: 12px !important;
+	font-weight: 600 !important;
+	line-height: 1.2 !important;
+	white-space: nowrap !important;
+	word-break: keep-all !important;
+	overflow-wrap: normal !important;
+	transition: 0.2s;
+}
+.cbah-btn-download:hover {
+	background: #0f172a !important;
+	box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+	transform: translateY(-1px);
+}
+
 
 /* Sub-headers for Split Cards */
 .cbah-sub-header {
@@ -457,143 +508,295 @@ h1, h2, h3, h4, h5, h6,
 
 /* Dynamic Market Snap shot **/
 
-.cbah-home-snapshot {
+.cbah-marketdata-date {
 	display: flex;
-	flex-wrap: wrap;
-	gap: 20px;
-	background: #ffffff;
-	padding: 24px 30px;
-	border-radius: 6px;
-	border: 1px solid #e2e8f0;
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-	justify-content: space-between;
+	justify-content: flex-end;
 	align-items: center;
-	font-family:
-		-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
-	margin: 20px 0;
-}
-.cbah-snap-item {
-	display: flex;
-	flex-direction: column;
-	min-width: 150px;
-}
-.cbah-snap-label {
-	font-size: 0.8rem;
-	text-transform: uppercase;
+	font-size: 12px;
 	color: #64748b;
-	font-weight: 600;
-	letter-spacing: 0.8px;
-	margin-bottom: 6px;
+	margin-bottom: 8px;
 }
-.cbah-snap-value {
-	font-size: 1rem;
-	font-weight: 700;
-	color: #0f172a;
-	margin-bottom: 2px;
-}
-.cbah-snap-change {
-	font-size: 0.9rem;
-	font-weight: 600;
-	display: flex;
-	align-items: center;
-}
-.cbah-snap-change .dashicons {
-	font-size: 16px;
-	width: 16px;
-	height: 16px;
+
+.cbah-marketdata-date .dashicons {
 	margin-right: 4px;
+	font-size: 14px;
+	width: 14px;
+	height: 14px;
 }
 
-/* Mobile View for Homepage Strip */
-@media (max-width: 768px) {
-	.cbah-home-snapshot {
-		flex-direction: column;
-		align-items: flex-start;
-		padding: 20px;
-	}
-	.cbah-snap-item {
-		width: 100%;
-		border-bottom: 1px solid #f1f5f9;
-		padding-bottom: 12px;
-		margin-bottom: 12px;
-	}
-	.cbah-snap-item:last-child {
-		border-bottom: none;
-		padding-bottom: 0;
-		margin-bottom: 0;
-	}
+.cbah-marketdata-date .mkt-date {
+	margin-left: 4px;
 }
 
-/* ---- MARKET TICKER STYLES ---- */
+.cbah-home-snapshot {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    background: #ffffff;
+    padding: 24px 30px;
+    margin: 20px 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    align-items: center;
+    overflow: hidden;
+    font-family: var(--cbah-body-font, "Josefin Sans", sans-serif);
+}
+
+.cbah-snap-item {
+    min-width: 0;
+    padding: 0 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.cbah-snap-item:first-child {
+    padding-left: 0;
+}
+
+.cbah-snap-item:last-child {
+    padding-right: 0;
+}
+
+.cbah-snap-label {
+    display: block;
+    margin: 0 0 6px;
+    font-family: var(--cbah-heading-font, "Josefin Sans", sans-serif);
+    font-size: 0.72rem;
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+}
+
+.cbah-snap-value {
+    display: block;
+    margin: 0 0 2px;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.25;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.cbah-snap-price {
+    display: inline;
+    font-family: inherit;
+    font-size: 0.85em;
+    line-height: inherit;
+    font-weight: 400;
+    margin-left: 4px;
+    opacity: 0.9;
+}
+
+.cbah-snap-turnover {
+    font-size: 14px;
+}
+
+.cbah-txt-muted {
+    color: #64748b;
+}
+
+.cbah-snap-change {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    font-family: inherit;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    font-weight: 600;
+}
+
+.cbah-snap-change .dashicons {
+    flex: 0 0 auto;
+    margin-right: 4px;
+    font-size: 16px;
+    line-height: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* Responsive snapshot and ticker behavior */
+.cbah-home-snapshot.cbah-snapshot-has-market-cap {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+@media (max-width: 900px) {
+    .cbah-home-snapshot {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        row-gap: 20px;
+        padding: 20px;
+    }
+
+    .cbah-snap-item {
+        padding: 0 14px;
+    }
+
+    .cbah-snap-item:nth-child(odd) {
+        padding-left: 0;
+    }
+
+    .cbah-snap-item:nth-child(even) {
+        padding-right: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .cbah-home-snapshot {
+        grid-template-columns: 1fr;
+        row-gap: 14px;
+        padding: 18px;
+    }
+
+    .cbah-snap-item,
+    .cbah-snap-item:nth-child(odd),
+    .cbah-snap-item:nth-child(even) {
+        width: 100%;
+        padding: 0 0 12px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .cbah-snap-item:last-child {
+        padding-bottom: 0;
+        border-bottom: 0;
+    }
+
+    .cbah-ticker-date {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+}
+
+/* ---- MARKET RESEARCH TICKER STYLES ---- */
+
+.cbah-price-ticker {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background: #ffffff;
+    overflow: hidden;
+    font-family: var(--cbah-body-font, "Josefin Sans", sans-serif);
+}
+
+.cbah-ticker-date {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 50px;
+    padding: 12px 20px;
+    background: #0f172a;
+    color: #f8fafc;
+    font-family: inherit;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 2;
+}
+
+.cbah-ticker-date .dashicons {
+    flex: 0 0 auto;
+    margin-right: 6px;
+    font-size: 13px;
+    line-height: 14px;
+    width: 14px;
+    height: 14px;
+    color: #94a3b8;
+}
 
 .cbah-ticker-wrapper {
-	width: 100%;
-	max-width: 100%;
-	min-width: 0; /* Stops the ticker from spilling out to the right */
-	position: relative; /* Keeps the overflow strictly contained */
-	overflow: hidden;
-	/*background-color: #0f172a;
-    border-top: 1px solid #1e293b;
-    border-bottom: 1px solid #1e293b;
-    */
-	padding: 12px 0;
-	box-sizing: border-box;
-	display: block; /* Changed from 'flex' to 'block' so the track can animate properly */
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    position: relative;
+    box-sizing: border-box;
+    overflow: hidden;
+    padding: 12px 0;
 }
 
 .cbah-ticker-track {
-	display: flex;
-	flex-wrap: nowrap; /* Forces items to stay in one horizontal line */
-	width: max-content;
-	/* 35s controls the speed. Increase to 45s if it moves too fast */
-	animation: cbahInfiniteScroll 700s linear infinite;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: max-content;
+    min-width: max-content;
+    margin: 0;
+    padding: 0;
+    animation: cbahInfiniteScroll 60s linear infinite;
+    will-change: transform;
 }
 
-/* Pause the scrolling when a user hovers over it with their mouse */
 .cbah-ticker-wrapper:hover .cbah-ticker-track {
-	animation-play-state: paused;
+    animation-play-state: paused;
 }
 
-.cbah-ticker-group {
-	display: flex;
-	align-items: center;
-	flex-shrink: 0; /* Prevents the browser from squishing the stock names */
-	white-space: nowrap; /* Forces everything onto one horizontal line */
+.cbah-price-ticker .cbah-ticker-group {
+    display: flex !important;
+    flex: 0 0 auto;
+    flex-direction: row !important;
+    align-items: center;
+    width: max-content;
+    min-width: max-content;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
 }
 
-.cbah-ticker-item {
-	font-family: "Josefin Sans", "Segoe UI", sans-serif;
-	color: #0f172a;
-	font-size: 12px;
-	font-weight: 600;
-	padding: 0 10px;
-	display: flex;
-	align-items: center;
+.cbah-price-ticker .cbah-ticker-item {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    width: auto;
+    min-width: max-content;
+    margin: 0;
+    padding: 0 10px;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 600;
+    color: #0f172a;
+    white-space: nowrap;
 }
 
-.cbah-ticker-item span {
-	margin-left: 3px; /* Space between the stock name and the percentage */
-	font-weight: 700;
+.cbah-price-ticker .cbah-ticker-item span {
+    display: inline;
+    width: auto;
+    margin: 0 0 0 3px;
+    padding: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    font-weight: 700;
+    white-space: nowrap;
 }
 
-/* Green and Red colors specifically for the ticker text */
 .cbah-ticker-item .cbah-txt-green {
-	color: #10b981;
+    color: #10b981;
 }
+
 .cbah-ticker-item .cbah-txt-red {
-	color: #ef4444;
+    color: #ef4444;
 }
 
-/* The actual scrolling engine */
 @keyframes cbahInfiniteScroll {
-	0% {
-		transform: translateX(0);
-	}
-	100% {
-		transform: translateX(-50%);
-	}
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
 }
-
 
 /* ==========================================================================
    WP File Download Plugin Overrides (Inside Report Previews)
@@ -709,3 +912,1381 @@ h1, h2, h3, h4, h5, h6,
 }
 
 
+
+/* ==========================================================================\n   MARKET SNAPSHOT / TICKER ISOLATION\n   These rules deliberately use plugin-prefixed selectors and !important only\n   where required to neutralize common theme/Elementor flex, span, and width\n   rules. The host site's typography is otherwise left untouched.\n   ========================================================================== */
+
+.cbah-price-ticker,
+.cbah-price-ticker * {
+    box-sizing: border-box !important;
+}
+
+.cbah-price-ticker {
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+.cbah-price-ticker .cbah-ticker-date {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: auto !important;
+    min-width: 218px !important;
+    max-width: none !important;
+    min-height: 50px !important;
+    margin: 0 !important;
+    padding: 12px 20px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    line-height: 1.2 !important;
+}
+
+.cbah-price-ticker .cbah-ticker-wrapper {
+    display: block !important;
+    flex: 1 1 auto !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 12px 0 !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+.cbah-price-ticker .cbah-ticker-track {
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    width: max-content !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    height: 26px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+}
+
+.cbah-price-ticker .cbah-ticker-group {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    width: max-content !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    height: 26px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+}
+
+.cbah-price-ticker .cbah-ticker-item {
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    width: auto !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    height: 26px !important;
+    margin: 0 !important;
+    padding: 0 10px !important;
+    white-space: nowrap !important;
+    line-height: 1.2 !important;
+    vertical-align: middle !important;
+}
+
+.cbah-price-ticker .cbah-ticker-item span,
+.cbah-price-ticker .cbah-ticker-item .cbah-txt-green,
+.cbah-price-ticker .cbah-ticker-item .cbah-txt-red {
+    display: inline !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 0 0 3px !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+    line-height: inherit !important;
+}
+
+/* Snapshot timestamp follows the same context as the snapshot itself. */
+.cbah-marketdata-date.cbah-marketdata-date-home {
+    color: #ffffff !important;
+    justify-content: center !important;
+    text-align: center !important;
+}
+
+.cbah-marketdata-date.cbah-marketdata-date-home .dashicons {
+    color: #ffffff !important;
+}
+
+.cbah-marketdata-date.cbah-marketdata-date-page {
+    color: #64748b !important;
+    justify-content: flex-end !important;
+    text-align: right !important;
+}
+
+/* ------------------------------\n   Inner-page snapshot\n   ------------------------------ */
+.cbah-home-snapshot.cbah-snapshot-page {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    grid-auto-flow: row !important;
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 20px 0 !important;
+    padding: 24px 30px !important;
+    gap: 0 !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item {
+    display: flex !important;
+    flex-flow: column nowrap !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 18px !important;
+}
+
+/* ------------------------------\n   Homepage snapshot\n   ------------------------------ */
+.cbah-home-snapshot.cbah-snapshot-home {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    grid-auto-flow: row !important;
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 20px 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    overflow: visible !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item {
+    display: flex !important;
+    flex-flow: column nowrap !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 20px !important;
+    border-left: 1px solid rgba(255,255,255,0.45) !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:first-child {
+    padding-left: 0 !important;
+    border-left: 0 !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:last-child {
+    padding-right: 0 !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-label,
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-value,
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-change {
+    color: #ffffff !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-label {
+    margin: 0 0 6px !important;
+    font-family: var(--cbah-heading-font, "Josefin Sans", sans-serif) !important;
+    font-size: 0.72rem !important;
+    line-height: 1.2 !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.7px !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-value {
+    margin: 0 0 2px !important;
+    font-size: 1rem !important;
+    line-height: 1.25 !important;
+    font-weight: 700 !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-price {
+    color: rgba(255,255,255,0.9) !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-change.cbah-txt-green {
+    color: #10b981 !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-change.cbah-txt-red {
+    color: #ef4444 !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-change.cbah-txt-muted {
+    color: rgba(255,255,255,0.85) !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-change .dashicons {
+    color: inherit !important;
+}
+
+@media (max-width: 900px) {
+    .cbah-home-snapshot.cbah-snapshot-page,
+    .cbah-home-snapshot.cbah-snapshot-home {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        row-gap: 20px !important;
+    }
+
+    .cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item,
+    .cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item {
+        padding: 0 14px !important;
+    }
+
+    .cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:nth-child(odd),
+    .cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item:nth-child(odd) {
+        padding-left: 0 !important;
+    }
+
+    .cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:nth-child(even),
+    .cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item:nth-child(even) {
+        padding-right: 0 !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .cbah-price-ticker .cbah-ticker-date {
+        min-width: 0 !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    .cbah-home-snapshot.cbah-snapshot-page,
+    .cbah-home-snapshot.cbah-snapshot-home {
+        grid-template-columns: 1fr !important;
+        row-gap: 14px !important;
+    }
+
+    .cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item,
+    .cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item,
+    .cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:nth-child(odd),
+    .cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item:nth-child(odd),
+    .cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:nth-child(even),
+    .cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item:nth-child(even) {
+        width: 100% !important;
+        padding: 0 0 12px !important;
+        border-left: 0 !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+    }
+
+    .cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:last-child,
+    .cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item:last-child {
+        padding-bottom: 0 !important;
+        border-bottom: 0 !important;
+    }
+}
+
+/* ==========================================================================
+   Spindle Market Research — isolated snapshot/ticker layout
+   These final rules are deliberately scoped to plugin components so host
+   themes/Elementor cannot recenter, collapse, or restyle their layout.
+   ========================================================================== */
+
+/* Snapshot: four columns on desktop; metrics occupy the fourth column. */
+.cbah-home-snapshot.cbah-snapshot-page,
+.cbah-home-snapshot.cbah-snapshot-home {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    column-gap: 0 !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item,
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item {
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item:first-child,
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:first-child {
+    padding-left: 0 !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item:last-child,
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:last-child {
+    padding-right: 0 !important;
+}
+
+/* Market turnover/size: each supplied metric is a paired label/value cell. */
+.cbah-snap-market-metrics {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: center !important;
+    min-width: 0 !important;
+    padding-left: 18px !important;
+    padding-right: 0 !important;
+    gap: 6px !important;
+    border-left: 0 !important;
+    text-align: left !important;
+}
+
+.cbah-snap-market-title {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 0 2px !important;
+    font-family: var(--cbah-body-font, "Josefin Sans", sans-serif) !important;
+    font-size: 0.72rem !important;
+    line-height: 1.2 !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.7px !important;
+    color: #64748b !important;
+    white-space: nowrap !important;
+}
+
+.cbah-snap-metrics-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    align-items: start !important;
+    justify-content: start !important;
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+.cbah-snap-metrics-count-1 .cbah-snap-metrics-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.cbah-snap-metrics-count-2 .cbah-snap-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.cbah-snap-metrics-count-3 .cbah-snap-metrics-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.cbah-snap-metric-cell {
+    position: relative !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    padding: 0 10px 0 0 !important;
+    box-sizing: border-box !important;
+}
+
+.cbah-snap-metric-cell + .cbah-snap-metric-cell {
+    padding-left: 12px !important;
+}
+
+.cbah-snap-metric-cell + .cbah-snap-metric-cell::before {
+    content: "|";
+    position: absolute;
+    left: 0;
+    top: 0;
+    line-height: 1.2;
+    color: #94a3b8;
+    font-family: var(--cbah-body-font, "Josefin Sans", sans-serif);
+}
+
+.cbah-snap-metric-label,
+.cbah-snap-metric-value {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    text-align: left !important;
+}
+
+.cbah-snap-metric-label {
+    font-family: var(--cbah-body-font, "Josefin Sans", sans-serif) !important;
+    font-size: 0.66rem !important;
+    line-height: 1.2 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.55px !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+}
+
+.cbah-snap-metric-value {
+    font-family: var(--cbah-body-font, "Josefin Sans", sans-serif) !important;
+    font-size: 0.82rem !important;
+    line-height: 1.2 !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+}
+
+.cbah-snapshot-home .cbah-snap-market-title,
+.cbah-snapshot-home .cbah-snap-metric-label,
+.cbah-snapshot-home .cbah-snap-metric-value {
+    color: #ffffff !important;
+}
+
+.cbah-snapshot-home .cbah-snap-metric-cell + .cbah-snap-metric-cell::before {
+    color: rgba(255,255,255,0.75) !important;
+}
+
+/* Homepage only: center the snapshot component itself, not the four internal sections. */
+.cbah-home-snapshot.cbah-snapshot-home {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    justify-self: center !important;
+}
+
+/* Dynamically generated sector report inner tabs. */
+#sec-tabs-bar.cbah-macro-tabs {
+    display: none !important;
+}
+#sec-tabs-bar.cbah-macro-tabs.cbah-is-visible {
+    display: flex !important;
+}
+#sec-tabs-bar .cbah-sec-tab {
+    display: inline-block !important;
+    cursor: pointer !important;
+    padding: 0 0 10px !important;
+    margin: 0 0 -1px !important;
+    border-bottom: 2px solid transparent !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    color: #64748b !important;
+}
+#sec-tabs-bar .cbah-sec-tab.active {
+    color: #0f172a !important;
+    border-bottom-color: #3b82f6 !important;
+}
+#sec-panes-container .cbah-sec-pane {
+    display: none !important;
+}
+#sec-panes-container .cbah-sec-pane.active {
+    display: block !important;
+}
+
+/* Keep every report action button on one line and visually consistent. */
+.cbah-reports-preview .cbah-btn-view,
+.cbah-reports-preview .cbah-btn-large,
+.cbah-sector-toggle-card .cbah-btn-view {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+}
+.cbah-sector-toggle-card .cbah-btn-view {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Macro report inner tabs: one active tab controls both underline and pane. */
+.cbah-macro-tabs {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 15px !important;
+    margin-bottom: 15px !important;
+    border-bottom: 1px solid #cbd5e1 !important;
+    padding-bottom: 0 !important;
+}
+
+.cbah-mac-tab {
+    display: inline-block !important;
+    cursor: pointer !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    font-weight: 700 !important;
+    color: #64748b !important;
+    border-bottom: 2px solid transparent !important;
+    padding: 0 0 10px !important;
+    margin: 0 0 -1px !important;
+}
+
+.cbah-mac-tab.active {
+    color: #0f172a !important;
+    border-bottom-color: #3b82f6 !important;
+}
+
+.cbah-mac-pane {
+    display: none !important;
+    box-sizing: border-box !important;
+}
+
+.cbah-mac-pane.active {
+    display: block !important;
+}
+
+#mac-tab-indicators.cbah-mac-pane {
+    padding: 15px !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+}
+
+#mac-tab-gov.cbah-mac-pane {
+    padding: 20px !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    color: #334155 !important;
+    font-size: 13px !important;
+    line-height: 1.6 !important;
+}
+
+.cbah-dashboard-wrap .cbah-data-table tbody td:first-child strong {
+    font-size: 0.72rem !important;
+    line-height: 1.2 !important;
+}
+
+/* Market mover tables: keep price/change values visible without affecting other tables. */
+.cbah-market-movers-table {
+    width: 100% !important;
+    table-layout: fixed !important;
+}
+
+.cbah-market-movers-table th:first-child,
+.cbah-market-movers-table td:first-child {
+    width: 40% !important;
+    min-width: 0 !important;
+    padding-right: 12px !important;
+    white-space: nowrap !important;
+}
+
+.cbah-market-movers-table th.cbah-table-price,
+.cbah-market-movers-table td.cbah-table-price-value {
+    width: 28% !important;
+    min-width: 90px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+}
+
+.cbah-market-movers-table th.cbah-table-value,
+.cbah-market-movers-table td.cbah-table-value {
+    width: 32% !important;
+    min-width: 100px !important;
+    padding-left: 12px !important;
+    padding-right: 36px !important;
+    text-align: right !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+}
+
+/* Ticker: force a left-anchored horizontal viewport and prevent host-theme centering. */
+.cbah-price-ticker {
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+}
+
+.cbah-price-ticker .cbah-ticker-date {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    min-width: 218px !important;
+    width: auto !important;
+    max-width: none !important;
+    min-height: 50px !important;
+    padding: 12px 20px !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    text-align: left !important;
+    box-sizing: border-box !important;
+}
+
+.cbah-price-ticker .cbah-ticker-wrapper {
+    display: block !important;
+    flex: 1 1 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    overflow: hidden !important;
+    position: relative !important;
+    padding: 12px 0 !important;
+    margin: 0 !important;
+    text-align: left !important;
+    box-sizing: border-box !important;
+}
+
+.cbah-price-ticker .cbah-ticker-track {
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: max-content !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    height: 26px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+    transform-origin: left center !important;
+    will-change: transform !important;
+}
+
+.cbah-price-ticker .cbah-ticker-group {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: max-content !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    height: 26px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+}
+
+.cbah-price-ticker .cbah-ticker-item {
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: auto !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    height: 26px !important;
+    margin: 0 !important;
+    padding: 0 10px !important;
+    white-space: nowrap !important;
+    text-align: left !important;
+    box-sizing: border-box !important;
+}
+
+.cbah-price-ticker .cbah-ticker-item span,
+.cbah-price-ticker .cbah-ticker-item .cbah-txt-green,
+.cbah-price-ticker .cbah-ticker-item .cbah-txt-red {
+    display: inline !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 0 0 3px !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+    line-height: inherit !important;
+}
+
+.cbah-price-ticker .cbah-ticker-wrapper,
+.cbah-price-ticker .cbah-ticker-track,
+.cbah-price-ticker .cbah-ticker-group,
+.cbah-price-ticker .cbah-ticker-item {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.cbah-price-ticker.cbah-ticker-js .cbah-ticker-track {
+    animation: none !important;
+}
+
+/* CSS fallback remains available until the JS controller has successfully measured the ticker. */
+@keyframes cbahInfiniteScroll {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-50%, 0, 0); }
+}
+
+.cbah-price-ticker:not(.cbah-ticker-js) .cbah-ticker-track {
+    animation: cbahInfiniteScroll 60s linear infinite !important;
+}
+
+.cbah-price-ticker:not(.cbah-ticker-js) .cbah-ticker-group-secondary {
+    display: flex !important;
+}
+
+@media (max-width: 900px) {
+    .cbah-home-snapshot.cbah-snapshot-page,
+    .cbah-home-snapshot.cbah-snapshot-home {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        row-gap: 20px !important;
+    }
+
+    .cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item,
+    .cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item {
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+    }
+
+    .cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item:nth-child(odd),
+    .cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:nth-child(odd) {
+        padding-left: 0 !important;
+    }
+
+    .cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item:nth-child(even),
+    .cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:nth-child(even) {
+        padding-right: 0 !important;
+    }
+
+    .cbah-snap-market-metrics {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .cbah-snap-metrics-row {
+        column-gap: 10px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .cbah-price-ticker .cbah-ticker-date {
+        min-width: 0 !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    .cbah-home-snapshot.cbah-snapshot-page,
+    .cbah-home-snapshot.cbah-snapshot-home {
+        grid-template-columns: 1fr !important;
+        row-gap: 14px !important;
+    }
+
+    .cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item,
+    .cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item {
+        width: 100% !important;
+        padding: 0 0 12px !important;
+        border-left: 0 !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+    }
+
+    .cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:last-child,
+    .cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item:last-child {
+        padding-bottom: 0 !important;
+        border-bottom: 0 !important;
+    }
+
+    .cbah-snap-metrics-grid {
+        column-gap: 0 !important;
+    }
+
+    .cbah-snap-metric-label {
+        font-size: 0.62rem !important;
+        letter-spacing: 0.45px !important;
+    }
+
+    .cbah-snap-metric-value {
+        font-size: 0.78rem !important;
+    }
+}
+
+
+/* Final 1.8.1 typography/layout refinements. */
+.cbah-home-snapshot.cbah-snapshot-page,
+.cbah-home-snapshot.cbah-snapshot-home {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.15fr) !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item,
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item:first-child,
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:first-child {
+    padding-left: 0 !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item:last-child,
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:last-child {
+    padding-right: 0 !important;
+}
+
+.cbah-home-snapshot .cbah-snap-label,
+.cbah-home-snapshot .cbah-snap-market-title {
+    font-family: var(--cbah-body-font, "Josefin Sans", sans-serif) !important;
+    font-size: 0.78rem !important;
+    line-height: 1.2 !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.55px !important;
+}
+
+.cbah-snap-market-metrics {
+    gap: 5px !important;
+    padding-left: 10px !important;
+    padding-right: 0 !important;
+}
+
+.cbah-snap-market-title {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.cbah-snap-metrics-row {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+.cbah-snap-metric-label,
+.cbah-snap-metric-value {
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.cbah-snap-metric-label {
+    font-family: var(--cbah-body-font, "Josefin Sans", sans-serif) !important;
+    font-size: 0.72rem !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0.45px !important;
+    font-weight: 600 !important;
+}
+
+.cbah-snap-metric-value {
+    font-family: var(--cbah-body-font, "Josefin Sans", sans-serif) !important;
+    font-size: 0.80rem !important;
+    line-height: 1.2 !important;
+    font-weight: 700 !important;
+}
+
+.cbah-snap-metrics-count-1 .cbah-snap-metrics-row,
+.cbah-snap-metrics-count-2 .cbah-snap-metrics-row,
+.cbah-snap-metrics-count-3 .cbah-snap-metrics-row {
+    grid-template-columns: none !important;
+}
+
+/* Keep market mover values comfortably inside the table on narrower admin widths. */
+.cbah-dashboard-wrap .cbah-market-movers-table th:first-child,
+.cbah-dashboard-wrap .cbah-market-movers-table td:first-child {
+    width: 38% !important;
+    padding-right: 10px !important;
+}
+
+.cbah-dashboard-wrap .cbah-market-movers-table th.cbah-table-price,
+.cbah-dashboard-wrap .cbah-market-movers-table td.cbah-table-price-value {
+    width: 27% !important;
+    min-width: 72px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    font-size: 0.74rem !important;
+}
+
+.cbah-dashboard-wrap .cbah-market-movers-table th.cbah-table-value,
+.cbah-dashboard-wrap .cbah-market-movers-table td.cbah-table-value {
+    width: 35% !important;
+    min-width: 88px !important;
+    padding-left: 8px !important;
+    padding-right: 16px !important;
+}
+
+@media (max-width: 900px) {
+    .cbah-home-snapshot.cbah-snapshot-page,
+    .cbah-home-snapshot.cbah-snapshot-home {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+    .cbah-home-snapshot .cbah-snap-item {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+    .cbah-snap-metrics-grid {
+        column-gap: 0 !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .cbah-home-snapshot.cbah-snapshot-page,
+    .cbah-home-snapshot.cbah-snapshot-home {
+        grid-template-columns: 1fr !important;
+    }
+    .cbah-snap-metrics-grid {
+        column-gap: 0 !important;
+    }
+}
+
+
+/* 1.8.1 final correction pass: snapshot metrics, ticker full-bleed behavior,
+ * macro tab visibility and market-mover spacing. All selectors are plugin-scoped. */
+.cbah-home-snapshot.cbah-snapshot-page,
+.cbah-home-snapshot.cbah-snapshot-home {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.20fr) !important;
+}
+
+.cbah-home-snapshot .cbah-snap-label,
+.cbah-home-snapshot .cbah-snap-market-title {
+    font-family: var(--cbah-body-font, "Josefin Sans", sans-serif) !important;
+    font-size: 0.80rem !important;
+    line-height: 1.2 !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.55px !important;
+}
+
+.cbah-home-snapshot .cbah-snap-value {
+    font-family: var(--cbah-body-font, "Josefin Sans", sans-serif) !important;
+    font-size: 1.02rem !important;
+    line-height: 1.25 !important;
+}
+
+.cbah-snap-market-metrics {
+    min-width: 0 !important;
+    padding-left: 8px !important;
+    padding-right: 0 !important;
+    gap: 5px !important;
+}
+
+.cbah-snap-market-title {
+    display: block !important;
+    width: 100% !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+}
+
+.cbah-snap-metrics-row {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    gap: 7px !important;
+    white-space: nowrap !important;
+}
+
+.cbah-snap-metric-label,
+.cbah-snap-metric-value {
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    font-family: var(--cbah-body-font, "Josefin Sans", sans-serif) !important;
+}
+
+.cbah-snap-metric-label {
+    font-size: 0.70rem !important;
+    line-height: 1.2 !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.4px !important;
+}
+
+.cbah-snap-metric-value {
+    font-size: 0.79rem !important;
+    line-height: 1.2 !important;
+    font-weight: 700 !important;
+}
+
+.cbah-snap-metric-separator {
+    flex: 0 0 auto !important;
+    font-family: var(--cbah-body-font, "Josefin Sans", sans-serif) !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    opacity: 0.65 !important;
+}
+
+.cbah-snapshot-home .cbah-snap-metric-separator {
+    color: rgba(255,255,255,0.75) !important;
+}
+
+.cbah-snapshot-page .cbah-snap-metric-separator {
+    color: #64748b !important;
+}
+
+/* Full-width ticker: the component escapes a narrower content column while
+ * remaining completely scoped to its own shortcode output. */
+.cbah-price-ticker.cbah-ticker-full-bleed {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: calc(50% - 50vw) !important;
+    margin-right: calc(50% - 50vw) !important;
+}
+
+.cbah-price-ticker.cbah-ticker-full-bleed .cbah-ticker-wrapper {
+    text-align: left !important;
+}
+
+.cbah-price-ticker .cbah-ticker-group-secondary {
+    display: flex !important;
+}
+
+.cbah-price-ticker.cbah-ticker-js .cbah-ticker-track {
+    animation: none !important;
+}
+
+/* Macro inner tabs: active state controls both underline and pane. */
+.cbah-macro-tabs .cbah-mac-tab.active {
+    color: #0f172a !important;
+    border-bottom-color: #3b82f6 !important;
+}
+
+.cbah-macro-tabs .cbah-mac-tab[aria-selected="true"] {
+    color: #0f172a !important;
+    border-bottom-color: #3b82f6 !important;
+}
+
+.cbah-macro-tabs .cbah-mac-tab[aria-selected="false"] {
+    color: #64748b !important;
+    border-bottom-color: transparent !important;
+}
+
+.cbah-mac-pane.active {
+    display: block !important;
+}
+
+.cbah-mac-pane:not(.active) {
+    display: none !important;
+}
+
+.cbah-market-symbol-title {
+    margin: 0 0 4px !important;
+    color: #0f172a !important;
+    font-size: 18px !important;
+    line-height: 1.25 !important;
+}
+
+.cbah-active-symbol {
+    margin: 0 !important;
+    color: #64748b !important;
+    font-size: 13px !important;
+}
+
+@media (max-width: 1100px) {
+    .cbah-home-snapshot .cbah-snap-market-title,
+    .cbah-home-snapshot .cbah-snap-label {
+        font-size: 0.74rem !important;
+    }
+
+    .cbah-snap-metric-label {
+        font-size: 0.66rem !important;
+    }
+
+    .cbah-snap-metric-value {
+        font-size: 0.75rem !important;
+    }
+
+    .cbah-snap-metrics-grid {
+        column-gap: 0 !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .cbah-home-snapshot.cbah-snapshot-page,
+    .cbah-home-snapshot.cbah-snapshot-home {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .cbah-snap-market-metrics {
+        padding-left: 0 !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .cbah-home-snapshot.cbah-snapshot-page,
+    .cbah-home-snapshot.cbah-snapshot-home {
+        grid-template-columns: 1fr !important;
+    }
+
+    .cbah-snap-metrics-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+
+    .cbah-snap-metric-label,
+    .cbah-snap-metric-value,
+    .cbah-snap-metric-separator {
+        white-space: nowrap !important;
+    }
+
+    .cbah-price-ticker.cbah-ticker-full-bleed {
+        width: 100vw !important;
+        max-width: 100vw !important;
+    }
+}
+
+
+/* --------------------------------------------------------------------------
+ * 1.8.1 UI correction pass — snapshot spacing, centering and report actions.
+ * Layout/visual-only overrides; no data, shortcode or interaction behavior
+ * is changed.
+ * -------------------------------------------------------------------------- */
+
+/* Keep the complete four-column snapshot visually grouped and centered. */
+.cbah-home-snapshot.cbah-snapshot-page,
+.cbah-home-snapshot.cbah-snapshot-home {
+    width: 100% !important;
+    max-width: 1180px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    justify-self: center !important;
+    column-gap: 0 !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.12fr) !important;
+}
+
+/* Reduce the visual distance between the four snapshot sections. */
+.cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item,
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item:first-child,
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:first-child {
+    padding-left: 0 !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item:last-child,
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:last-child {
+    padding-right: 0 !important;
+}
+
+/* Keep only one divider immediately before Market Turnover & Size. */
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:last-child {
+    border-left: 0 !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:nth-child(3) {
+    border-right: 1px solid rgba(255,255,255,0.45) !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item:last-child,
+.cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item:nth-child(3) {
+    border-left: 0 !important;
+    border-right: 0 !important;
+}
+
+.cbah-snap-market-metrics {
+    padding-left: 6px !important;
+    padding-right: 0 !important;
+    border-left: 0 !important;
+}
+
+/* Top Gainer and Top Loser snapshot values: slightly more compact. */
+.cbah-home-snapshot .cbah-snap-item:nth-child(2) .cbah-snap-value,
+.cbah-home-snapshot .cbah-snap-item:nth-child(3) .cbah-snap-value {
+    font-size: 0.94rem !important;
+    line-height: 1.22 !important;
+}
+
+/* View/Download report actions use the same compact typography and stay on one line. */
+.cbah-reports-preview .cbah-btn-view,
+.cbah-reports-preview .cbah-btn-download,
+.cbah-reports-preview .cbah-btn-large {
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+    box-sizing: border-box !important;
+}
+
+.cbah-reports-preview .cbah-btn-view {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 10px 18px !important;
+}
+
+.cbah-reports-preview .cbah-btn-download,
+.cbah-reports-preview .cbah-btn-large {
+    padding: 10px 18px !important;
+}
+
+@media (max-width: 1100px) {
+    .cbah-home-snapshot .cbah-snap-item:nth-child(2) .cbah-snap-value,
+    .cbah-home-snapshot .cbah-snap-item:nth-child(3) .cbah-snap-value {
+        font-size: 0.90rem !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .cbah-home-snapshot.cbah-snapshot-page,
+    .cbah-home-snapshot.cbah-snapshot-home {
+        max-width: calc(100% - 16px) !important;
+    }
+
+    .cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:nth-child(3) {
+        border-right: 0 !important;
+    }
+}
+
+
+/* --------------------------------------------------------------------------
+ * 1.8.1 UI correction pass 2 — market snapshot divider/metric alignment and
+ * admin ticker settings separation. Visual/layout only; no data or behavior
+ * is changed.
+ * -------------------------------------------------------------------------- */
+
+/* Give the fourth snapshot section enough room for all three market metrics. */
+.cbah-home-snapshot.cbah-snapshot-page,
+.cbah-home-snapshot.cbah-snapshot-home {
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 0.95fr) minmax(0, 0.95fr) minmax(250px, 1.35fr) !important;
+}
+
+/* The divider before Market Turnover & Size is a single, consistent rule. */
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:nth-child(3) {
+    border-right: 1.5px solid rgba(255,255,255,0.62) !important;
+}
+
+.cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:last-child,
+.cbah-home-snapshot.cbah-snapshot-page .cbah-snap-item:last-child {
+    border-left: 0 !important;
+}
+
+/* Market metrics use three equal cells so labels and values cannot collide. */
+.cbah-snap-market-metrics {
+    min-width: 0 !important;
+    padding-left: 8px !important;
+    padding-right: 0 !important;
+    gap: 5px !important;
+}
+
+.cbah-snap-metrics-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    align-items: start !important;
+    column-gap: 0 !important;
+}
+
+.cbah-snap-metric-cell {
+    min-width: 0 !important;
+    width: auto !important;
+    padding: 0 8px 0 0 !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+.cbah-snap-metric-cell + .cbah-snap-metric-cell {
+    padding-left: 12px !important;
+}
+
+.cbah-snap-metric-cell + .cbah-snap-metric-cell::before {
+    content: "|" !important;
+    left: 0 !important;
+    top: 0 !important;
+    line-height: 1.2 !important;
+    color: #94a3b8 !important;
+}
+
+.cbah-snapshot-home .cbah-snap-metric-cell + .cbah-snap-metric-cell::before {
+    color: rgba(255,255,255,0.72) !important;
+}
+
+.cbah-snap-metric-label,
+.cbah-snap-metric-value {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+    box-sizing: border-box !important;
+}
+
+.cbah-snap-metric-label {
+    font-size: 0.68rem !important;
+    letter-spacing: 0.4px !important;
+}
+
+.cbah-snap-metric-value {
+    font-size: 0.74rem !important;
+    letter-spacing: 0 !important;
+}
+
+@media (max-width: 1100px) {
+    .cbah-home-snapshot.cbah-snapshot-page,
+    .cbah-home-snapshot.cbah-snapshot-home {
+        grid-template-columns: minmax(0, 0.92fr) minmax(0, 0.92fr) minmax(0, 0.92fr) minmax(240px, 1.30fr) !important;
+    }
+
+    .cbah-snap-metric-label {
+        font-size: 0.64rem !important;
+    }
+
+    .cbah-snap-metric-value {
+        font-size: 0.70rem !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .cbah-home-snapshot.cbah-snapshot-home .cbah-snap-item:nth-child(3) {
+        border-right: 0 !important;
+    }
+
+    .cbah-home-snapshot.cbah-snapshot-page,
+    .cbah-home-snapshot.cbah-snapshot-home {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .cbah-snap-market-metrics {
+        grid-column: 1 / -1 !important;
+        padding-left: 0 !important;
+    }
+
+    .cbah-snap-metric-value {
+        font-size: 0.74rem !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .cbah-home-snapshot.cbah-snapshot-page,
+    .cbah-home-snapshot.cbah-snapshot-home {
+        grid-template-columns: 1fr !important;
+    }
+
+    .cbah-snap-market-metrics {
+        grid-column: auto !important;
+    }
+
+    .cbah-snap-metric-label {
+        font-size: 0.62rem !important;
+    }
+
+    .cbah-snap-metric-value {
+        font-size: 0.70rem !important;
+    }
+}

@@ -13,7 +13,7 @@ class CBAH_ACF_Fields {
     public function enqueue_admin_assets() {
         $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
 
-        if ( ! $screen || ! in_array( $screen->post_type, array( 'cbah_market_report' ), true ) ) {
+        if ( ! $screen || ! in_array( $screen->post_type, array( 'cbah_market_report', 'cbah_equity', 'cbah_sector', 'cbah_macro', 'cbah_corporate', 'cbah_dividend' ), true ) ) {
             return;
         }
 
@@ -34,7 +34,9 @@ class CBAH_ACF_Fields {
     }
 
     public function register_local_field_groups() {
-        if ( ! function_exists( 'acf_add_local_field_group' ) ) return;
+        if ( ! cbah_is_acf_pro_active() || ! function_exists( 'acf_add_local_field_group' ) ) {
+            return;
+        }
 
        // 1. MARKET AGGREGATES
         acf_add_local_field_group( array(

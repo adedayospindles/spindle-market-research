@@ -37,3 +37,144 @@
             .cbah-preview-text [class*="wpfd-file-info"], .cbah-preview-text [class*="wpfd-file-meta"] {
                 display: none !important; /* Hides Hits, Date, Size */
             }
+
+
+/* Dynamic dashboard elements use classes instead of inline styles. */
+.cbah-empty-sector {
+    color: #64748b;
+    font-style: italic;
+}
+
+.cbah-active-symbol {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.cbah-live-chart-note {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.cbah-tv-chart-container {
+    width: 100%;
+    height: 400px;
+}
+
+.cbah-sec-tab {
+    cursor: pointer;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+    padding-bottom: 10px;
+    margin-bottom: -1px;
+    border-bottom: 2px solid transparent;
+    color: #64748b;
+}
+
+.cbah-sec-tab.active {
+    color: #0f172a;
+    border-bottom-color: #3b82f6;
+}
+
+.cbah-sec-pane {
+    display: none;
+    background: #ffffff;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    color: #334155;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.cbah-sec-pane.active {
+    display: block;
+}
+
+.cbah-mac-pane {
+    display: none;
+}
+
+.cbah-mac-pane.active {
+    display: block;
+}
+
+.cbah-mac-tab {
+    color: #64748b;
+    border-bottom-color: transparent;
+}
+
+.cbah-mac-tab.active {
+    color: #0f172a;
+    border-bottom-color: #3b82f6;
+}
+
+
+.cbah-is-hidden {
+    display: none !important;
+}
+
+.cbah-is-visible {
+    display: flex !important;
+}
+
+
+/* Inline-style extraction: declarations retained as scoped plugin classes. */
+.cbah-inline-08b70455{display: flex; justify-content: flex-end; margin-bottom: 16px; font-size: 12px; color: #64748b; align-items: center;}
+.cbah-inline-405a231b{margin-right: 6px; font-size: 14px; width: 14px; height: 14px;}
+.cbah-inline-e4ea4584{color: #0f172a; margin-left: 5px;}
+.cbah-inline-6584bac0{height: 250px;}
+.cbah-inline-298bc5cf{height: 220px;}
+.cbah-inline-41f999b3{display:flex; justify-content:space-between; align-items:center;}
+.cbah-inline-a527bac1{text-align:right;}
+.cbah-inline-76084ee4{margin-bottom:0;}
+.cbah-inline-5aa5719b{padding: 12px 16px; border-bottom: 1px solid #f1f5f9; color: #64748b;}
+.cbah-inline-d722b363{padding: 12px 16px; border-bottom: 1px solid #f1f5f9; text-align: right;}
+.cbah-inline-720d28d2{color: #0f172a; font-size:13px;}
+.cbah-inline-0da16adb{padding: 12px 16px; color: #64748b;}
+.cbah-inline-24233262{padding: 12px 16px; text-align: right;}
+.cbah-inline-62de3eb9{height:120px; padding:10px;}
+.cbah-inline-e36a561e{max-height: 180px;}
+.cbah-inline-e37482cd{max-height: 550px;}
+.cbah-inline-80d5e1cf{color:#64748b; font-size:12px;}
+.cbah-inline-26d95a02{background:#f8fafc; overflow-y:auto; max-height: 550px; padding:24px;}
+.cbah-inline-09ce3e2d{margin-top:0; color:#0f172a; font-size:20px; margin-bottom:10px;}
+.cbah-inline-7e3efbe6{display:flex; gap:10px; margin-bottom: 20px; display:none;}
+.cbah-inline-48abaa1b{display:inline-flex; align-items:center; background:#ffffff; border:1px solid #cbd5e1; padding:8px 16px; font-size:12px;}
+.cbah-inline-b8d09f84{margin-right:4px; font-size:14px; width:14px; height:14px;}
+.cbah-inline-03513952{display:inline-flex; align-items:center; border:1px solid #cbd5e1; padding:8px 16px; font-size:12px;}
+.cbah-inline-5a135f0c{color:#334155; font-size:14px; line-height:1.6;}
+.cbah-inline-c8be1ccb{display:none;}
+.cbah-inline-8be405a4{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #f1f5f9; padding-bottom:8px;}
+.cbah-inline-0ee55f72{margin:0; font-size:14px; color:#0f172a;}
+.cbah-inline-b29070cf{background:#f8fafc; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:700;}
+.cbah-inline-0e3f0bdd{margin:0 0 4px 0; font-size:11px; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;}
+.cbah-inline-7a4f9370{font-size:12px; color:#334155; margin-top:0; margin-bottom:14px;}
+.cbah-inline-b6156395{font-size:12px; color:#334155; margin-bottom:14px;}
+.cbah-inline-41cce30b{display:flex; gap:10px; margin-top:10px;}
+.cbah-inline-d44ac06b{display:inline-flex; align-items:center; background:#ffffff; border:1px solid #cbd5e1;}
+.cbah-inline-05add553{display:inline-flex; align-items:center; background:#f1f5f9; border:1px solid #cbd5e1;}
+.cbah-inline-000fa159{display:flex; gap:12px; margin-bottom: 20px; display:none;}
+.cbah-inline-c19589a6{padding:8px 16px; display:inline-flex; align-items:center; font-size:12px;}
+.cbah-inline-f0e997ab{margin-right:4px;}
+.cbah-inline-a8b353d2{width:fit-content; display:inline-flex; align-items:center; padding:8px 16px; font-size:12px;}
+.cbah-inline-2df3697a{color:#334155; font-size:14px; line-height:1.6; margin-bottom:20px; border-top:1px solid #cbd5e1; padding-top:16px;}
+.cbah-inline-3468836b{display:flex; gap:15px; margin-bottom:15px; border-bottom:1px solid #cbd5e1; padding-bottom:0; display:none;}
+.cbah-inline-646bda85{color:#334155; font-size:14px; line-height:1.6; margin-bottom:20px;}
+.cbah-inline-1da9facb{margin:0;}
+.cbah-inline-eb6e6d6f{max-height: 600px;}
+.cbah-inline-04370ea0{width:100px; text-align:center;}
+.cbah-inline-7dde5e56{margin-bottom:20px;}
+.cbah-inline-87bd79fd{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;}
+.cbah-inline-de647afc{font-size: 10px;text-transform: uppercase;}
+.cbah-inline-3d444a0c{display:flex; align-items:center; gap:6px;}
+.cbah-inline-968a61e7{color:#94a3b8; font-size:16px; margin-top:3px;}
+.cbah-inline-2e78f9fb{background:#3b82f6; color:#fff !important; border:none; padding:6px 14px; cursor:pointer;}
+.cbah-inline-7b20d4bc{background:#f1f5f9; padding:10px 18px; font-size:12px; color:#475569; display:flex; align-items:center; justify-content:space-between; border-top:1px solid #e2e8f0; flex-wrap:wrap; gap:8px;}
+.cbah-inline-c5f72a8b{display:flex; gap:6px;}
+.cbah-inline-7623f055{flex:1;}
+.cbah-inline-8749e525{color:#64748b; font-size:13px;}
+.cbah-inline-331e9253{flex:2;}
+.cbah-inline-12a9ecb7{height:400px; width:100%;}
+.cbah-inline-4283c1b7{text-align:right; color:#94a3b8; font-size:12px;}

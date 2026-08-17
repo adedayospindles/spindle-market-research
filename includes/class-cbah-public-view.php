@@ -6,6 +6,114 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class CBAH_Public_View {
 
+    public function __construct() {
+        // Enqueue the component stylesheet in wp_head whenever a supported shortcode
+        // exists on the current page. This prevents the unstyled-content flash that
+        // can occur when assets are first enqueued from shortcode rendering.
+        add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_styles_early' ), 20 );
+    }
+
+    /**
+     * Enqueue only the scoped component stylesheet early enough to avoid FOUC.
+     * Google Fonts and scripts remain conditional on actual shortcode rendering.
+     *
+     * @return void
+     */
+    public function enqueue_public_styles_early() {
+        if ( ! $this->page_contains_public_shortcode() ) {
+            return;
+        }
+
+        wp_enqueue_style(
+            'cbah-frontend-style',
+            CBAH_PLUGIN_URL . 'public/css/cbah-style.css',
+            array(),
+            CBAH_VERSION
+        );
+
+        // Load the selected Google Fonts and CSS variables at the same early stage
+        // so typography is also applied before the page content first paints.
+        CBAH_Settings::enqueue_frontend_fonts();
+        CBAH_Settings::add_frontend_typography_variables( 'cbah-frontend-style' );
+
+        $post = get_queried_object();
+        $content = ( $post instanceof WP_Post ) ? (string) $post->post_content : '';
+
+        // Load the ticker controller early when the ticker shortcode is present.
+        // The controller itself is scoped to .cbah-price-ticker, so unrelated
+        // site JavaScript is not affected.
+        $ticker_present = false !== strpos( $content, '[market_research_price_ticker' );
+        if ( $post instanceof WP_Post ) {
+            $elementor_data = (string) get_post_meta( $post->ID, '_elementor_data', true );
+            $ticker_present = $ticker_present || false !== strpos( $elementor_data, '[market_research_price_ticker' );
+        }
+        if ( $ticker_present ) {
+            wp_enqueue_script(
+                'cbah-ticker',
+                CBAH_PLUGIN_URL . 'public/js/cbah-ticker.js',
+                array(),
+                CBAH_VERSION,
+                true
+            );
+        }
+    }
+
+    private function page_contains_public_shortcode() {
+        if ( is_admin() ) {
+            return false;
+        }
+
+        $shortcodes = array(
+            '[market_research_dashboard',
+            '[market_research_home_snapshot',
+            '[market_research_price_ticker',
+        );
+
+        $post = get_queried_object();
+        $content = ( $post instanceof WP_Post ) ? (string) $post->post_content : '';
+        foreach ( $shortcodes as $shortcode ) {
+            if ( false !== strpos( $content, $shortcode ) ) {
+                return true;
+            }
+        }
+
+        // Elementor stores shortcode widgets in serialized JSON. Only inspect the
+        // current post's builder data; no global frontend assets are loaded.
+        if ( $post instanceof WP_Post ) {
+            $elementor_data = (string) get_post_meta( $post->ID, '_elementor_data', true );
+            foreach ( $shortcodes as $shortcode ) {
+                if ( false !== strpos( $elementor_data, $shortcode ) ) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Enqueue the public styles used by the market snapshot and ticker.
+     * These shortcodes can be used independently of the full dashboard.
+     *
+     * @return void
+     */
+    private function enqueue_public_styles() {
+        wp_enqueue_style(
+            'cbah-frontend-style',
+            CBAH_PLUGIN_URL . 'public/css/cbah-style.css',
+            array(),
+            CBAH_VERSION
+        );
+
+        CBAH_Settings::enqueue_frontend_fonts();
+        CBAH_Settings::add_frontend_typography_variables( 'cbah-frontend-style' );
+    }
+
+    /**
+     * Enqueue the complete dashboard assets.
+     *
+     * @return void
+     */
     public function enqueue_assets() {
         // Chart.js is bundled locally so the plugin does not depend on a third-party CDN.
         wp_enqueue_script(
@@ -32,12 +140,15 @@ class CBAH_Public_View {
             true
         );
 
-        wp_enqueue_style(
-            'cbah-frontend-style',
-            CBAH_PLUGIN_URL . 'public/css/cbah-style.css',
+        wp_enqueue_script(
+            'cbah-ticker',
+            CBAH_PLUGIN_URL . 'public/js/cbah-ticker.js',
             array(),
-            CBAH_VERSION
+            CBAH_VERSION,
+            true
         );
+
+        $this->enqueue_public_styles();
 
         wp_enqueue_style(
             'cbah-dashboard-style',
@@ -88,7 +199,7 @@ class CBAH_Public_View {
         // Market Capitalization
         $m_cap = get_field('market_cap', $m_id);
         if ($m_cap === '' || $m_cap === null) {
-            $m_cap = '0.00';
+            $m_cap = '';
         }
 
         $vol   = get_field('turnover_volume', $m_id) ?: '0';
@@ -146,7 +257,9 @@ class CBAH_Public_View {
     }
     
     public function render_dashboard() {
-        if ( ! function_exists( 'get_field' ) ) return '<p>ACF Pro Required.</p>';
+        if ( ! cbah_is_acf_pro_active() || ! function_exists( 'get_field' ) ) {
+            return '<p>' . esc_html__( 'Spindle Market Research Hub requires Advanced Custom Fields PRO to display this dashboard.', 'spindle-market-research' ) . '</p>';
+        }
 
         // Enqueue dashboard assets only when this shortcode is actually rendered.
         // This is required for the separated frontend controller to run and keeps
@@ -206,9 +319,9 @@ class CBAH_Public_View {
                 
                 <div class="cbah-tab-pane active" id="tab-dashboard">
                     
-                    <div style="display: flex; justify-content: flex-end; margin-bottom: 16px; font-size: 12px; color: #64748b; align-items: center;">
-                        <span class="dashicons dashicons-calendar-alt" style="margin-right: 6px; font-size: 14px; width: 14px; height: 14px;"></span>
-                        Market Data as of: <strong style="color: #0f172a; margin-left: 5px;"><?php echo esc_html($data['report_date']); ?></strong>
+                    <div class="cbah-inline-08b70455">
+                        <span class="dashicons dashicons-calendar-alt cbah-inline-405a231b"></span>
+                        Market Data as of: <strong class="cbah-inline-e4ea4584"><?php echo esc_html($data['report_date']); ?></strong>
                     </div>
 
                     <!-- ROW 1: Market Core -->
@@ -219,18 +332,18 @@ class CBAH_Public_View {
                                 <div class="cbah-chart-filters" id="cbah-history-pills">
                                     <span data-period="1d">1D</span><span class="active" data-period="5d">5D</span><span data-period="1m">1M</span><span data-period="ytd">YTD</span>
                                 </div>
-                                <div style="height: 250px;"><canvas id="cbahMarketChart"></canvas></div>
+                                <div class="cbah-inline-6584bac0"><canvas id="cbahMarketChart"></canvas></div>
                             </div>
                         </div>
 
                         <div class="cbah-card">
                             <div class="cbah-card-header">TOP GAINERS</div>
                             <div class="cbah-card-body cbah-no-pad">
-                                <table class="cbah-data-table cbah-table-hover">
+                                <table class="cbah-data-table cbah-market-movers-table cbah-table-hover">
                                     <thead><tr>
                                         <th>Symbol</th>
-                                        <th style="text-align:center;">Price (₦)</th>
-                                        <th style="text-align:right;padding-right: 10px;">Change(%)</th>
+                                        <th class="cbah-table-price">Price (₦)</th>
+                                        <th class="cbah-table-value">Change(%)</th>
                                     </tr></thead>
                                     <tbody id="cbah_table_gainers">
                                         <?php if($data['gainers']): foreach($data['gainers'] as $g): 
@@ -238,8 +351,8 @@ class CBAH_Public_View {
                                         ?>
                                             <tr>
                                                 <td><strong><?php echo esc_html($g['ticker']); ?></strong></td>
-                                                <td style="text-align:center; color:#64748b;"><?php echo esc_html($g['price']); ?></td>
-                                                <td style="text-align:right;padding-right: 10px;" class="cbah-txt-green">+<?php echo esc_html($clean_val); ?>%</td>
+                                                <td class="cbah-table-price-value"><?php echo esc_html($g['price']); ?></td>
+                                                <td class="cbah-table-value cbah-txt-green">+<?php echo esc_html($clean_val); ?>%</td>
                                             </tr>
                                         <?php endforeach; else: echo '<tr><td colspan="3" class="cbah-empty">No Data</td></tr>'; endif; ?>
                                     </tbody>
@@ -250,11 +363,11 @@ class CBAH_Public_View {
                         <div class="cbah-card">
                             <div class="cbah-card-header">TOP LOSERS</div>
                             <div class="cbah-card-body cbah-no-pad">
-                                <table class="cbah-data-table cbah-table-hover">
+                                <table class="cbah-data-table cbah-market-movers-table cbah-table-hover">
                                     <thead><tr>
                                         <th>Symbol</th>
-                                        <th style="text-align:center;">Price (₦)</th>
-                                        <th style="text-align:right;padding-right: 10px;">Change(%)</th>
+                                        <th class="cbah-table-price">Price (₦)</th>
+                                        <th class="cbah-table-value">Change(%)</th>
                                     </tr></thead>
                                     <tbody id="cbah_table_losers">
                                         <?php if($data['losers']): foreach($data['losers'] as $l): 
@@ -262,8 +375,8 @@ class CBAH_Public_View {
                                         ?>
                                             <tr>
                                                 <td><strong><?php echo esc_html($l['ticker']); ?></strong></td>
-                                                <td style="text-align:center; color:#64748b;"><?php echo !empty($l['price']) ? esc_html($l['price']) : '-'; ?></td>
-                                                <td style="text-align:right;padding-right: 10px;" class="cbah-txt-red">-<?php echo esc_html($clean_val); ?>%</td>
+                                                <td class="cbah-table-price-value"><?php echo !empty($l['price']) ? esc_html($l['price']) : '-'; ?></td>
+                                                <td class="cbah-table-value cbah-txt-red">-<?php echo esc_html($clean_val); ?>%</td>
                                             </tr>
                                         <?php endforeach; else: echo '<tr><td colspan="3" class="cbah-empty">No Data</td></tr>'; endif; ?>
                                     </tbody>
@@ -276,24 +389,24 @@ class CBAH_Public_View {
                     <div class="cbah-grid-3">
                         <div class="cbah-card">
                             <div class="cbah-card-header">SECTOR PERFORMANCE</div>
-                            <div class="cbah-card-body"><div style="height: 220px;"><canvas id="cbahSectorChart"></canvas></div></div>
+                            <div class="cbah-card-body"><div class="cbah-inline-298bc5cf"><canvas id="cbahSectorChart"></canvas></div></div>
                         </div>
 
                         <div class="cbah-card">
-                            <div class="cbah-card-header" style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-family: Libre Caslon Text; font-size: 0.7rem;">FIXED INCOME</span>
+                            <div class="cbah-card-header cbah-inline-41f999b3">
+                                <span class="cbah-fixed-income-label">FIXED INCOME</span>
                                 <select id="cbah-fixed-filter" class="cbah-dropdown-minimal">
                                     <option value="all">Instruments</option><option value="Bonds">Bonds</option><option value="Bills">Bills</option>
                                 </select>
                             </div>
                             <div class="cbah-card-body cbah-no-pad cbah-scroll-y">
                                 <table class="cbah-data-table cbah-table-hover">
-                                    <thead><tr><th>Tenor</th><th style="text-align:right;">Action</th></tr></thead>
+                                    <thead><tr><th>Tenor</th><th class="cbah-inline-a527bac1">Action</th></tr></thead>
                                     <tbody id="cbah_table_fixed">
                                         <?php if($data['fixed']): foreach($data['fixed'] as $f): ?>
                                             <tr data-type="<?php echo esc_attr($f['fi_type']); ?>">
                                                 <td><?php echo esc_html($f['tenor']); ?></td>
-                                                <td style="text-align:right;"><a href="<?php echo esc_url($f['action_link']); ?>" target="_blank" class="cbah-btn-view">View</a></td>
+                                                <td class="cbah-inline-a527bac1"><a href="<?php echo esc_url($f['action_link']); ?>" target="_blank" class="cbah-btn-view">View</a></td>
                                             </tr>
                                         <?php endforeach; else: echo '<tr><td colspan="2" class="cbah-empty">No Data</td></tr>'; endif; ?>
                                     </tbody>
@@ -301,43 +414,43 @@ class CBAH_Public_View {
                             </div>
                         </div>
 
-                        <!-- EQUITY MARKET TURNOVER & SIZE CARD -->
+                        <!-- MARKET TURNOVER & SIZE CARD -->
                         <div class="cbah-card">
-                            <div class="cbah-card-header">EQUITY MARKET TURNOVER & SIZE</div>
+                            <div class="cbah-card-header">MARKET TURNOVER & SIZE</div>
                             <div class="cbah-card-body cbah-no-pad">
-                                <table class="cbah-data-table" style="margin-bottom:0;">
+                                <table class="cbah-data-table cbah-inline-76084ee4">
                                     <tbody>
+                                        <?php if ( '' !== trim( (string) $data['m_cap'] ) ) : ?>
+                                            <tr>
+                                                <td class="cbah-inline-5aa5719b">Market Capitalization</td>
+                                                <td class="cbah-inline-d722b363">
+                                                    <strong class="cbah-inline-720d28d2">
+                                                        <?php
+                                                        $raw_mcap = trim( (string) $data['m_cap'] );
+                                                        if ( is_numeric( str_replace( ',', '', $raw_mcap ) ) ) {
+                                                            echo esc_html( '₦' . $this->format_market_number( $raw_mcap ) );
+                                                        } else {
+                                                            echo esc_html( ( false === stripos( $raw_mcap, '₦' ) && false === stripos( $raw_mcap, '$' ) ) ? '₦' . $raw_mcap : $raw_mcap );
+                                                        }
+                                                        ?>
+                                                    </strong>
+                                                </td>
+                                            </tr>
+                                        <?php endif; ?>
                                         <tr>
-                                            <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Market Capitalization</td>
-                                            <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; text-align: right;">
-                                                <strong style="color: #0f172a; font-size:13px;">
-                                                    <?php 
-                                                    $raw_mcap = trim($data['m_cap']);
-                                                    // Check if numeric and format with the smart helper function
-                                                    if (is_numeric(str_replace(',', '', $raw_mcap))) {
-                                                        echo esc_html( '₦' . $this->format_market_number($raw_mcap) );
-                                                    } else {
-                                                        // Automatically prepend ₦ if custom text is provided without currency symbols
-                                                        echo (stripos($raw_mcap, '₦') === false && stripos($raw_mcap, '$') === false) ? '₦' . esc_html($raw_mcap) : esc_html($raw_mcap);
-                                                    }
-                                                    ?>
-                                                </strong>
+                                            <td class="cbah-inline-5aa5719b">Turnover Volume</td>
+                                            <td class="cbah-inline-d722b363">
+                                                <strong class="cbah-inline-720d28d2"><?php echo esc_html($this->format_market_number($data['vol'])); ?></strong>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Turnover Volume</td>
-                                            <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; text-align: right;">
-                                                <strong style="color: #0f172a; font-size:13px;"><?php echo esc_html($this->format_market_number($data['vol'])); ?></strong>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="padding: 12px 16px; color: #64748b;">Turnover Value</td>
-                                            <td style="padding: 12px 16px; text-align: right;">
-                                                <strong style="color: #0f172a; font-size:13px;">₦<?php echo esc_html($this->format_market_number($data['val'])); ?></strong>
+                                            <td class="cbah-inline-0da16adb">Turnover Value</td>
+                                            <td class="cbah-inline-24233262">
+                                                <strong class="cbah-inline-720d28d2">₦<?php echo esc_html($this->format_market_number($data['val'])); ?></strong>
                                             </td>
                                         </tr>
                                     </tbody>
-                                    <!--<div style="height:120px; padding:10px;"><canvas id="cbahTurnoverChart"></canvas></div>-->
+                                    <!--<div class="cbah-inline-62de3eb9"><canvas id="cbahTurnoverChart"></canvas></div>-->
                                 </table>
                             </div>
                         </div>
@@ -350,9 +463,9 @@ class CBAH_Public_View {
                             <div class="cbah-card-body cbah-no-pad">
                                 <table class="cbah-data-table cbah-table-hover">
                                     <tbody>
-                                        <tr><td>Headline Inflation</td><td style="text-align:right;"><strong><?php echo esc_html($data['inf']); ?>%</strong></td></tr>
-                                        <tr><td>Interest Rate (MPR)</td><td style="text-align:right;"><strong><?php echo esc_html($data['int_r']); ?>%</strong></td></tr>
-                                        <tr><td>Brent Crude Oil</td><td style="text-align:right;"><strong>$<?php echo esc_html($data['crude']); ?>/bbl</strong></td></tr>
+                                        <tr><td>Headline Inflation</td><td class="cbah-inline-a527bac1"><strong><?php echo esc_html($data['inf']); ?>%</strong></td></tr>
+                                        <tr><td>Interest Rate (MPR)</td><td class="cbah-inline-a527bac1"><strong><?php echo esc_html($data['int_r']); ?>%</strong></td></tr>
+                                        <tr><td>Brent Crude Oil</td><td class="cbah-inline-a527bac1"><strong>$<?php echo esc_html($data['crude']); ?>/bbl</strong></td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -360,14 +473,14 @@ class CBAH_Public_View {
 
                         <div class="cbah-card">
                             <div class="cbah-card-header">FOREIGN EXCHANGE RATES</div>
-                            <div class="cbah-card-body cbah-no-pad cbah-scroll-y" style="max-height: 180px;">
+                            <div class="cbah-card-body cbah-no-pad cbah-scroll-y cbah-inline-e36a561e">
                                 <table class="cbah-data-table cbah-table-hover">
-                                    <thead><tr><th>Currency Pair</th><th style="text-align:right;">Rate (₦)</th></tr></thead>
+                                    <thead><tr><th>Currency Pair</th><th class="cbah-inline-a527bac1">Rate (₦)</th></tr></thead>
                                     <tbody>
                                         <?php if($data['macro_fx']): foreach($data['macro_fx'] as $fx): ?>
                                             <tr>
                                                 <td><strong><?php echo esc_html($fx['pair']); ?></strong></td>
-                                                <td style="text-align:right;">₦<?php echo esc_html($fx['rate']); ?></td>
+                                                <td class="cbah-inline-a527bac1">₦<?php echo esc_html($fx['rate']); ?></td>
                                             </tr>
                                         <?php endforeach; else: echo '<tr><td colspan="2" class="cbah-empty">No FX Data</td></tr>'; endif; ?>
                                     </tbody>
@@ -377,9 +490,9 @@ class CBAH_Public_View {
 
                         <div class="cbah-card">
                             <div class="cbah-card-header">RECENT DIVIDENDS</div>
-                            <div class="cbah-card-body cbah-no-pad cbah-scroll-y" style="max-height: 180px;">
+                            <div class="cbah-card-body cbah-no-pad cbah-scroll-y cbah-inline-e36a561e">
                                 <table class="cbah-data-table cbah-table-hover">
-                                    <thead><tr><th>Symbol</th><th style="text-align:right;">Amount (₦)</th></tr></thead>
+                                    <thead><tr><th>Symbol</th><th class="cbah-inline-a527bac1">Amount (₦)</th></tr></thead>
                                     <tbody>
                                     <?php
                                     $snap_divs = get_posts( array( 'post_type' => 'cbah_dividend', 'posts_per_page' => 4 ) );
@@ -387,7 +500,7 @@ class CBAH_Public_View {
                                         foreach ( $snap_divs as $div ) {
                                             $t = get_field('div_ticker', $div->ID) ?: '-';
                                             $a = get_field('div_amount', $div->ID) ?: '-';
-                                            echo '<tr><td><strong>'.esc_html($t).'</strong></td><td style="text-align:right;" class="cbah-txt-green">'.esc_html($a).'</td></tr>';
+                                            echo '<tr><td><strong>'.esc_html($t).'</strong></td><td class="cbah-txt-green cbah-inline-a527bac1">'.esc_html($a).'</td></tr>';
                                         }
                                     } else { echo '<tr><td colspan="2" class="cbah-empty">No recent dividends.</td></tr>'; }
                                     ?>
@@ -405,7 +518,7 @@ class CBAH_Public_View {
                         <!-- LEFT DIRECTORY LIST -->
                         <div class="cbah-reports-list">
                             <div class="cbah-card-header">REPORTS DIRECTORY</div>
-                            <div class="cbah-card-body cbah-no-pad cbah-scroll-y" style="max-height: 550px;">
+                            <div class="cbah-card-body cbah-no-pad cbah-scroll-y cbah-inline-e37482cd">
                                 <table class="cbah-data-table cbah-interactive-table">
                                     <thead>
                                         <tr>
@@ -424,7 +537,7 @@ class CBAH_Public_View {
                                             ?>
                                             <tr class="<?php echo esc_attr( trim( $active_class ) ); ?>" onclick="cbahLoadReport(this)" data-title="<?php echo esc_attr( $eq->post_title ); ?>" data-desc="<?php echo esc_attr( $analysis ); ?>" data-file="<?php echo esc_attr( $file ); ?>">
                                                 <td><?php echo esc_html( $eq->post_title ); ?></td>
-                                                <td style="color:#64748b; font-size:12px;"><?php echo esc_html( get_the_date( 'M d, Y', $eq->ID ) ); ?></td>
+                                                <td class="cbah-inline-80d5e1cf"><?php echo esc_html( get_the_date( 'M d, Y', $eq->ID ) ); ?></td>
                                             </tr>
                                             <?php
                                         }
@@ -438,20 +551,20 @@ class CBAH_Public_View {
                         </div>
                         
                         <!-- RIGHT PREVIEW PANE WITH DUAL BUTTONS -->
-                        <div class="cbah-reports-preview" style="background:#f8fafc; overflow-y:auto; max-height: 550px; padding:24px;">
-                            <h2 id="rep-preview-title" style="margin-top:0; color:#0f172a; font-size:20px; margin-bottom:10px;">Select a report</h2>
+                        <div class="cbah-reports-preview cbah-inline-26d95a02">
+                            <h2 class="cbah-inline-09ce3e2d" id="rep-preview-title">Select a report</h2>
                             
                             <!-- DUAL VIEW / DOWNLOAD BUTTONS -->
-                            <div id="rep-preview-actions" style="display:flex; gap:10px; margin-bottom: 20px; display:none;">
-                                <a href="#" id="rep-preview-view-btn" target="_blank" class="cbah-btn-view" style="display:inline-flex; align-items:center; background:#ffffff; border:1px solid #cbd5e1; padding:8px 16px; font-size:12px;">
-                                    <span class="dashicons dashicons-visibility" style="margin-right:4px; font-size:14px; width:14px; height:14px;"></span> View Report
+                            <div class="cbah-inline-7e3efbe6" id="rep-preview-actions">
+                                <a href="#" id="rep-preview-view-btn" target="_blank" class="cbah-btn-view cbah-inline-48abaa1b">
+                                    <span class="dashicons dashicons-visibility cbah-inline-b8d09f84"></span> View Report
                                 </a>
-                                <a href="#" id="rep-preview-dl-btn" target="_blank" class="cbah-btn-large" style="display:inline-flex; align-items:center; border:1px solid #cbd5e1; padding:8px 16px; font-size:12px;" download>
-                                    <span class="dashicons dashicons-download" style="margin-right:4px; font-size:14px; width:14px; height:14px;"></span> Download Report
+                                <a href="#" id="rep-preview-dl-btn" target="_blank" class="cbah-btn-large cbah-btn-download cbah-inline-03513952" download>
+                                    <span class="dashicons dashicons-download cbah-inline-b8d09f84"></span> Download Report
                                 </a>
                             </div>
 
-                            <p id="rep-preview-desc" class="cbah-preview-text" style="color:#334155; font-size:14px; line-height:1.6;">...</p>
+                            <p id="rep-preview-desc" class="cbah-preview-text cbah-inline-5a135f0c">...</p>
                         </div>
 
                     </div>
@@ -465,7 +578,7 @@ class CBAH_Public_View {
                         <!-- LEFT DIRECTORY LIST -->
                         <div class="cbah-reports-list">
                             <div class="cbah-card-header">SECTOR REPORTS DIRECTORY</div>
-                            <div class="cbah-card-body cbah-no-pad cbah-scroll-y" style="max-height: 550px;">
+                            <div class="cbah-card-body cbah-no-pad cbah-scroll-y cbah-inline-e37482cd">
                                 <table class="cbah-data-table cbah-interactive-table">
                                     <thead>
                                         <tr>
@@ -482,11 +595,7 @@ class CBAH_Public_View {
                                             $date = get_the_date('M d, Y', $sp->ID);
                                             
                                             $raw_content = $sp->post_content ?: 'No general overview provided for this report.';
-                                            $content = apply_filters(
-                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Intentional use of the WordPress core the_content filter.
-                                                'the_content',
-                                                $raw_content
-                                            ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Intentionally use WordPress core content filter.
+                                            $content = wpautop( wp_kses_post( $raw_content ) );
                                             
                                             $main_pdf = get_field('main_sector_report_url', $sp->ID) ?: '#';
 
@@ -495,14 +604,14 @@ class CBAH_Public_View {
                                             <tr class="<?php echo esc_attr( trim( $active_class ) ); ?>" onclick="cbahLoadSectorPost(this)" data-title="<?php echo esc_attr( $title ); ?>" data-mainpdf="<?php echo esc_attr( $main_pdf ); ?>">
                                             <?php
                                             echo '<td><strong>' . esc_html( $title ) . '</strong></td>';
-                                            echo '<td style="color:#64748b; font-size:12px;">' . esc_html( $date ) . '</td>';
+                                            echo '<td class="cbah-inline-80d5e1cf">' . esc_html( $date ) . '</td>';
                                             
-                                            echo "<td style='display:none;' class='hidden-payload'>";
+                                            echo "<td class='hidden-payload cbah-inline-c8be1ccb'>";
                                             echo "<div class='sp-content'>" . wp_kses_post( $content ) . "</div>";
                                             
                                             // SECTOR REPEATER ITEMS
                                             $repeater = get_field('sector_breakdown_reports', $sp->ID);
-                                            echo "<div class='sp-sectors' style='display:none;'>";
+                                            echo "<div class='sp-sectors cbah-inline-c8be1ccb'>";
                                             if ( $repeater ) {
                                                 foreach ( $repeater as $row ) {
                                                     $s_name = $row['sector_name'] ?: 'Sector';
@@ -516,25 +625,25 @@ class CBAH_Public_View {
                                                     if ( stripos($s_rec, 'neutral') !== false ) $badge = '';
 
                                                     echo "<div class='cbah-sector-toggle-card' data-name='".esc_attr($s_name)."'>";
-                                                    echo "<div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #f1f5f9; padding-bottom:8px;'>";
-                                                    echo "<h3 style='margin:0; font-size:14px; color:#0f172a;'>" . esc_html($s_name) . "</h3>";
+                                                    echo "<div class='cbah-inline-8be405a4'>";
+                                                    echo "<h3 class='cbah-inline-0ee55f72'>" . esc_html($s_name) . "</h3>";
                                                     ?>
-                                                    <span class="<?php echo esc_attr( $badge ); ?>" style="background:#f8fafc; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:700;"><?php echo esc_html( $s_rec ); ?></span>
+                                                    <span class="<?php echo esc_attr( $badge ); ?>" class="cbah-inline-b29070cf"><?php echo esc_html( $s_rec ); ?></span>
                                                     <?php
                                                     echo "</div>";
                                                     
                                                     if ( $s_driv ) {
-                                                        echo "<h4 style='margin:0 0 4px 0; font-size:11px; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;'>Growth Drivers</h4>";
-                                                        echo "<p style='font-size:12px; color:#334155; margin-top:0; margin-bottom:14px;'>" . esc_html($s_driv) . "</p>";
+                                                        echo "<h4 class='cbah-inline-0e3f0bdd'>Growth Drivers</h4>";
+                                                        echo "<p class='cbah-inline-7a4f9370'>" . esc_html($s_driv) . "</p>";
                                                     }
                                                     if ( $s_out ) {
-                                                        echo "<h4 style='margin:0 0 4px 0; font-size:11px; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;'>Sector Outlook</h4>";
-                                                        echo "<div style='font-size:12px; color:#334155; margin-bottom:14px;'>" . wp_kses_post(wpautop($s_out)) . "</div>";
+                                                        echo "<h4 class='cbah-inline-0e3f0bdd'>Sector Outlook</h4>";
+                                                        echo "<div class='cbah-inline-b6156395'>" . wp_kses_post(wpautop($s_out)) . "</div>";
                                                     }
                                                     if ( $s_pdf ) {
-                                                        echo "<div style='display:flex; gap:10px; margin-top:10px;'>";
-                                                        echo "<a href='".esc_url($s_pdf)."' target='_blank' class='cbah-btn-view' style='display:inline-flex; align-items:center; background:#ffffff; border:1px solid #cbd5e1;'><span class='dashicons dashicons-visibility' style='margin-right:4px; font-size:14px; width:14px; height:14px;'></span> View</a>";
-                                                        echo "<a href='".esc_url($s_pdf)."' target='_blank' class='cbah-btn-view' style='display:inline-flex; align-items:center; background:#f1f5f9; border:1px solid #cbd5e1;' download><span class='dashicons dashicons-download' style='margin-right:4px; font-size:14px; width:14px; height:14px;'></span> Download</a>";
+                                                        echo "<div class='cbah-inline-41cce30b'>";
+                                                        echo "<a href='".esc_url($s_pdf)."' target='_blank' class='cbah-btn-view cbah-inline-d44ac06b'><span class='dashicons dashicons-visibility cbah-inline-b8d09f84'></span> View Report</a>";
+                                                        echo "<a href='".esc_url($s_pdf)."' target='_blank' class='cbah-btn-large cbah-btn-download cbah-inline-05add553' download><span class='dashicons dashicons-download cbah-inline-b8d09f84'></span> Download Report</a>";
                                                         echo "</div>";
                                                     }
                                                     echo "</div>"; 
@@ -552,24 +661,24 @@ class CBAH_Public_View {
                         </div>
                         
                         <!-- RIGHT PANE: Sector Tabbed Preview -->
-                        <div class="cbah-reports-preview" style="background:#f8fafc; overflow-y:auto; max-height: 550px; padding:24px;">
-                            <h2 id="sec-preview-title" style="margin-top:0; color:#0f172a; font-size:20px; margin-bottom:10px;">Select a Report</h2>
+                        <div class="cbah-reports-preview cbah-inline-26d95a02">
+                            <h2 class="cbah-inline-09ce3e2d" id="sec-preview-title">Select a Report</h2>
                             
                             <!-- MAIN SECTOR PDF BUTTONS -->
-                            <div id="sec-preview-actions" style="display:flex; gap:12px; margin-bottom: 20px; display:none;">
-                                <a href="#" id="sec-preview-view-btn" target="_blank" class="cbah-btn-view" style="padding:8px 16px; display:inline-flex; align-items:center; font-size:12px;">
-                                    <span class="dashicons dashicons-visibility" style="margin-right:4px;"></span> View Report
+                            <div class="cbah-inline-000fa159" id="sec-preview-actions">
+                                <a href="#" id="sec-preview-view-btn" target="_blank" class="cbah-btn-view cbah-inline-c19589a6">
+                                    <span class="dashicons dashicons-visibility cbah-inline-f0e997ab"></span> View Report
                                 </a>
-                                <a href="#" id="sec-preview-main-btn" target="_blank" class="cbah-btn-large" style="width:fit-content; display:inline-flex; align-items:center; padding:8px 16px; font-size:12px;" download>
-                                    <span class="dashicons dashicons-download" style="margin-right:4px;"></span> Download Report
+                                <a href="#" id="sec-preview-main-btn" target="_blank" class="cbah-btn-large cbah-btn-download cbah-inline-a8b353d2" download>
+                                    <span class="dashicons dashicons-download cbah-inline-f0e997ab"></span> Download Report
                                 </a>
                             </div>
                             
                             <!-- GLOBAL SECTOR BRIEF (Post Content) -->
-                            <div id="sec-preview-content" class="cbah-preview-text" style="color:#334155; font-size:14px; line-height:1.6; margin-bottom:20px; border-top:1px solid #cbd5e1; padding-top:16px;"></div>
+                            <div id="sec-preview-content" class="cbah-preview-text cbah-inline-2df3697a"></div>
                             
                             <!-- SECTOR TOGGLE TABS BAR -->
-                            <div id="sec-tabs-bar" class="cbah-macro-tabs" style="display:flex; gap:15px; margin-bottom:15px; border-bottom:1px solid #cbd5e1; padding-bottom:0; display:none;">
+                            <div id="sec-tabs-bar" class="cbah-macro-tabs cbah-inline-3468836b">
                                 <!-- Dynamically injected sector tabs go here -->
                             </div>
 
@@ -590,7 +699,7 @@ class CBAH_Public_View {
                         <!-- LEFT DIRECTORY LIST -->
                         <div class="cbah-reports-list">
                             <div class="cbah-card-header">MACRO REPORTS DIRECTORY</div>
-                            <div class="cbah-card-body cbah-no-pad cbah-scroll-y" style="max-height: 550px;">
+                            <div class="cbah-card-body cbah-no-pad cbah-scroll-y cbah-inline-e37482cd">
                                 <table class="cbah-data-table cbah-interactive-table">
                                     <thead>
                                         <tr>
@@ -608,11 +717,6 @@ class CBAH_Public_View {
                                             
                                             $raw_content = $mac->post_content ?: 'No general overview provided for this report.';
                                             $content = wpautop(wp_kses_post($raw_content));
-                                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Intentional use of the WordPress core the_content filter.
-                                           /*  $content = apply_filters(
-                                                'the_content',
-                                                $raw_content
-                                            );  */// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Intentionally use WordPress core content filter.
                                             
                                             $inf = get_field('macro_inflation', $mac->ID) ?: 'N/A';
                                             $int = get_field('macro_interest_rate', $mac->ID) ?: 'N/A';
@@ -625,9 +729,9 @@ class CBAH_Public_View {
                                             <tr class="<?php echo esc_attr( trim( $active_class ) ); ?>" onclick="cbahLoadMacroPost(this)" data-title="<?php echo esc_attr( $title ); ?>" data-file="<?php echo esc_attr( $file ); ?>">
                                             <?php
                                             echo '<td>' . esc_html( $title ) . '</td>';
-                                            echo '<td style="color:#64748b; font-size:12px;">' . esc_html( $date ) . '</td>';
+                                            echo '<td class="cbah-inline-80d5e1cf">' . esc_html( $date ) . '</td>';
                                             
-                                            echo "<td style='display:none;' class='hidden-payload'>";
+                                            echo "<td class='hidden-payload cbah-inline-c8be1ccb'>";
                                             echo "<div class='mac-content'>" . wp_kses_post( $content ) . "</div>";
                                             echo "<div class='mac-inf'>" . esc_html($inf) . "</div>";
                                             echo "<div class='mac-int'>" . esc_html($int) . "</div>";
@@ -646,36 +750,36 @@ class CBAH_Public_View {
                         </div>
                         
                         <!-- RIGHT PREVIEW PANE WITH DUAL BUTTONS -->
-                        <div class="cbah-reports-preview" style="background:#f8fafc; overflow-y:auto; max-height: 550px; padding:24px;">
-                            <h2 id="mac-preview-title" style="margin-top:0; color:#0f172a; font-size:20px; margin-bottom:10px;">Select a report</h2>
+                        <div class="cbah-reports-preview cbah-inline-26d95a02">
+                            <h2 class="cbah-inline-09ce3e2d" id="mac-preview-title">Select a report</h2>
                             
                             <!-- DUAL VIEW / DOWNLOAD BUTTONS -->
-                            <div id="mac-preview-actions" style="display:flex; gap:10px; margin-bottom: 20px; display:none;">
-                                <a href="#" id="mac-preview-view-btn" target="_blank" class="cbah-btn-view" style="display:inline-flex; align-items:center; background:#ffffff; border:1px solid #cbd5e1; padding:8px 16px; font-size:12px;">
-                                    <span class="dashicons dashicons-visibility" style="margin-right:4px; font-size:14px; width:14px; height:14px;"></span> View Report
+                            <div class="cbah-inline-7e3efbe6" id="mac-preview-actions">
+                                <a href="#" id="mac-preview-view-btn" target="_blank" class="cbah-btn-view cbah-inline-48abaa1b">
+                                    <span class="dashicons dashicons-visibility cbah-inline-b8d09f84"></span> View Report
                                 </a>
-                                <a href="#" id="mac-preview-dl-btn" target="_blank" class="cbah-btn-large" style="display:inline-flex; align-items:center; border:1px solid #cbd5e1; padding:8px 16px; font-size:12px;" download>
-                                    <span class="dashicons dashicons-download" style="margin-right:4px; font-size:14px; width:14px; height:14px;"></span> Download Report
+                                <a href="#" id="mac-preview-dl-btn" target="_blank" class="cbah-btn-large cbah-btn-download cbah-inline-03513952" download>
+                                    <span class="dashicons dashicons-download cbah-inline-b8d09f84"></span> Download Report
                                 </a>
                             </div>
 
-                            <div id="mac-preview-content" class="cbah-preview-text" style="color:#334155; font-size:14px; line-height:1.6; margin-bottom:20px;"></div>
+                            <div id="mac-preview-content" class="cbah-preview-text cbah-inline-646bda85"></div>
                             
                             <!-- MINI TABS UI -->
-                            <div class="cbah-macro-tabs" style="display:flex; gap:15px; margin-bottom:15px; border-bottom:1px solid #cbd5e1; padding-bottom:0;">
-                                <span class="cbah-mac-tab active" data-target="mac-tab-indicators" style="cursor:pointer; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; font-weight:700; color:#0f172a; border-bottom:2px solid #3b82f6; padding-bottom:10px; margin-bottom:-1px;">Key Indicators</span>
-                                <span class="cbah-mac-tab" data-target="mac-tab-gov" style="cursor:pointer; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; font-weight:700; color:#64748b; padding-bottom:10px; margin-bottom:-1px; border-bottom:2px solid transparent;">Government Policies</span>
+                            <div class="cbah-macro-tabs">
+                                <span class="cbah-mac-tab active" data-target="mac-tab-indicators" role="tab" aria-selected="true">Key Indicators</span>
+                                <span class="cbah-mac-tab" data-target="mac-tab-gov" role="tab" aria-selected="false">Government Policies</span>
                             </div>
 
-                            <div id="mac-tab-indicators" class="cbah-mac-pane active" style="display:block; background:#ffffff; padding:15px; border:1px solid #e2e8f0; border-radius:6px;">
-                                <table class="cbah-data-table cbah-table-hover" style="margin:0;">
-                                    <tr><td>Headline Inflation</td><td style="text-align:right;"><strong id="mac-val-inf"></strong>%</td></tr>
-                                    <tr><td>Interest Rate (MPR)</td><td style="text-align:right;"><strong id="mac-val-int"></strong>%</td></tr>
-                                    <tr><td>Brent Crude Oil</td><td style="text-align:right;">$<strong id="mac-val-crude"></strong>/bbl</td></tr>
+                            <div id="mac-tab-indicators" class="cbah-mac-pane active">
+                                <table class="cbah-data-table cbah-table-hover cbah-inline-1da9facb">
+                                    <tr><td>Headline Inflation</td><td class="cbah-inline-a527bac1"><strong id="mac-val-inf"></strong>%</td></tr>
+                                    <tr><td>Interest Rate (MPR)</td><td class="cbah-inline-a527bac1"><strong id="mac-val-int"></strong>%</td></tr>
+                                    <tr><td>Brent Crude Oil</td><td class="cbah-inline-a527bac1">$<strong id="mac-val-crude"></strong>/bbl</td></tr>
                                 </table>
                             </div>
 
-                            <div id="mac-tab-gov" class="cbah-mac-pane" style="display:none; background:#ffffff; padding:20px; border:1px solid #e2e8f0; border-radius:6px; color:#334155; font-size:13px; line-height:1.6;">
+                            <div id="mac-tab-gov" class="cbah-mac-pane">
                                 <div id="mac-val-gov"></div>
                             </div>
                             
@@ -688,9 +792,9 @@ class CBAH_Public_View {
                 <div class="cbah-tab-pane" id="tab-pricelists">
                     <div class="cbah-card">
                         <div class="cbah-card-header">DAILY PRICE LISTS</div>
-                        <div class="cbah-card-body cbah-no-pad cbah-scroll-y" style="max-height: 600px;">
+                        <div class="cbah-card-body cbah-no-pad cbah-scroll-y cbah-inline-eb6e6d6f">
                             <table class="cbah-data-table cbah-table-hover">
-                                <thead><tr><th>Date</th><th style="text-align:right;">Action</th></tr></thead>
+                                <thead><tr><th>Date</th><th class="cbah-inline-a527bac1">Action</th></tr></thead>
                                 <tbody>
                                     <?php 
                                     $pl_reports = get_posts( array( 'post_type' => 'cbah_market_report', 'posts_per_page' => 30 ) );
@@ -702,7 +806,7 @@ class CBAH_Public_View {
                                             if ( $pricelists ) {
                                                 foreach ( $pricelists as $p ) {
                                                     $has_pricelists = true;
-                                                    echo '<tr><td><strong>' . esc_html($p['date']) . '</strong></td><td style="text-align:right;"><a href="' . esc_url($p['url']) . '" target="_blank" class="cbah-btn-view" style="width:100px; text-align:center;">Download</a></td></tr>';
+                                                    echo '<tr><td><strong>' . esc_html($p['date']) . '</strong></td><td class="cbah-inline-a527bac1"><a href="' . esc_url($p['url']) . '" target="_blank" class="cbah-btn-large cbah-btn-download cbah-inline-04370ea0">Download</a></td></tr>';
                                                 }
                                             }
                                         }
@@ -718,19 +822,19 @@ class CBAH_Public_View {
 
                 <!-- MARKET DATA Search UI -->
                 <div class="cbah-tab-pane" id="tab-market">
-                    <div class="cbah-card" style="margin-bottom:20px;">
-                        <div class="cbah-card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                            <span>MARKET DATA SEARCH: <span style="font-size: 10px;text-transform: uppercase;">Search for your prefered stock using the stock name</span></span>
-                            <div class="cbah-search-wrapper" style="display:flex; align-items:center; gap:6px;">
-                                <span class="dashicons dashicons-search" style="color:#94a3b8; font-size:16px; margin-top:3px;"></span>
+                    <div class="cbah-card cbah-inline-7dde5e56">
+                        <div class="cbah-card-header cbah-inline-87bd79fd">
+                            <span>MARKET DATA SEARCH: <span class="cbah-inline-de647afc">Search for your prefered stock using the stock name</span></span>
+                            <div class="cbah-search-wrapper cbah-inline-3d444a0c">
+                                <span class="dashicons dashicons-search cbah-inline-968a61e7"></span>
                                 <input type="text" id="cbah-stock-search" placeholder="Type symbol e.g., MTNN..." class="cbah-search-input" value="MTNN">
-                                <button type="button" id="cbah-search-btn" class="cbah-btn-view" style="background:#3b82f6; color:#fff !important; border:none; padding:6px 14px; cursor:pointer;">Search</button>
+                                <button type="button" id="cbah-search-btn" class="cbah-btn-view cbah-inline-2e78f9fb">Search</button>
                             </div>
                         </div>
 
-                        <div style="background:#f1f5f9; padding:10px 18px; font-size:12px; color:#475569; display:flex; align-items:center; justify-content:space-between; border-top:1px solid #e2e8f0; flex-wrap:wrap; gap:8px;">
+                        <div class="cbah-inline-7b20d4bc">
                             <span><strong>Quick Look:</strong> Select a popular NGX symbol to generate instant charts:</span>
-                            <div class="cbah-ticker-pills" style="display:flex; gap:6px;">
+                            <div class="cbah-ticker-pills cbah-inline-c5f72a8b">
                                 <button type="button" class="cbah-pill-btn" onclick="cbahTriggerSearch('MTNN')">MTNN</button>
                                 <button type="button" class="cbah-pill-btn" onclick="cbahTriggerSearch('DANGCEM')">DANGCEM</button>
                                 <button type="button" class="cbah-pill-btn" onclick="cbahTriggerSearch('GTCO')">GTCO</button>
@@ -741,17 +845,17 @@ class CBAH_Public_View {
                     </div>
                     
                     <div class="cbah-reports-layout">
-                        <div class="cbah-card" style="flex:1;">
+                        <div class="cbah-card cbah-inline-7623f055">
                             <div class="cbah-card-header">MARKET HIGHLIGHT</div>
                             <div class="cbah-card-body" id="market-data-highlight">
                                 <h3>MTNN</h3>
-                                <p style="color:#64748b; font-size:13px;">Selected stock indicator. Interactive price history loaded on right.</p>
+                                <p class="cbah-inline-8749e525">Selected stock indicator. Interactive price history loaded on right.</p>
                             </div>
                         </div>
-                        <div class="cbah-card" style="flex:2;">
+                        <div class="cbah-card cbah-inline-331e9253">
                             <div class="cbah-card-header">PRICE MOVEMENT CHART</div>
                             <div class="cbah-card-body" id="market-data-chart">
-                                <div id="tv_chart_container" style="height:400px; width:100%;"></div>
+                                <div class="cbah-inline-12a9ecb7" id="tv_chart_container"></div>
                             </div>
                         </div>
                     </div>
@@ -761,9 +865,9 @@ class CBAH_Public_View {
                 <div class="cbah-tab-pane" id="tab-summaries">
                     <div class="cbah-card">
                         <div class="cbah-card-header">DAILY MARKET SUMMARIES</div>
-                        <div class="cbah-card-body cbah-no-pad cbah-scroll-y" style="max-height: 600px;">
+                        <div class="cbah-card-body cbah-no-pad cbah-scroll-y cbah-inline-eb6e6d6f">
                             <table class="cbah-data-table cbah-table-hover">
-                                <thead><tr><th>Date</th><th style="text-align:right;">Action</th></tr></thead>
+                                <thead><tr><th>Date</th><th class="cbah-inline-a527bac1">Action</th></tr></thead>
                                 <tbody>
                                     <?php 
                                     $sum_reports = get_posts( array( 'post_type' => 'cbah_market_report', 'posts_per_page' => 30 ) );
@@ -775,7 +879,7 @@ class CBAH_Public_View {
                                             if ( $summaries ) {
                                                 foreach ( $summaries as $s ) {
                                                     $has_summaries = true;
-                                                    echo '<tr><td><strong>' . esc_html($s['date']) . '</strong></td><td style="text-align:right;"><a href="' . esc_url($s['url']) . '" target="_blank" class="cbah-btn-view" style="width:100px; text-align:center;">Download</a></td></tr>';
+                                                    echo '<tr><td><strong>' . esc_html($s['date']) . '</strong></td><td class="cbah-inline-a527bac1"><a href="' . esc_url($s['url']) . '" target="_blank" class="cbah-btn-large cbah-btn-download cbah-inline-04370ea0">Download</a></td></tr>';
                                                 }
                                             }
                                         }
@@ -793,9 +897,9 @@ class CBAH_Public_View {
                 <div class="cbah-tab-pane" id="tab-corporate">
                     <div class="cbah-card">
                         <div class="cbah-card-header">CORPORATE RESULTS</div>
-                        <div class="cbah-card-body cbah-no-pad cbah-scroll-y" style="max-height: 600px;">
+                        <div class="cbah-card-body cbah-no-pad cbah-scroll-y cbah-inline-eb6e6d6f">
                             <table class="cbah-data-table cbah-table-hover">
-                                <thead><tr><th>Company Ticker</th><th>Period</th><th>Published</th><th style="text-align:right;">Document</th></tr></thead>
+                                <thead><tr><th>Company Ticker</th><th>Period</th><th>Published</th><th class="cbah-inline-a527bac1">Document</th></tr></thead>
                                 <tbody>
                                 <?php
                                 $corporates = get_posts( array( 'post_type' => 'cbah_corporate', 'posts_per_page' => 20 ) );
@@ -819,9 +923,9 @@ class CBAH_Public_View {
                                         echo '<td>' . get_the_date('Y-m-d', $corp->ID) . '</td>';
                                         
                                         if ($url !== '#') {
-                                            echo '<td style="text-align:right;"><a href="'.esc_url($url).'" target="_blank" class="cbah-btn-view">Download</a></td>';
+                                            echo '<td class="cbah-inline-a527bac1"><a href="'.esc_url($url).'" target="_blank" class="cbah-btn-large cbah-btn-download">Download</a></td>';
                                         } else {
-                                            echo '<td style="text-align:right; color:#94a3b8; font-size:12px;">No File</td>';
+                                            echo '<td class="cbah-inline-4283c1b7">No File</td>';
                                         }
                                         
                                         echo '</tr>';
@@ -838,7 +942,7 @@ class CBAH_Public_View {
                 <div class="cbah-tab-pane" id="tab-dividend">
                     <div class="cbah-card">
                         <div class="cbah-card-header">DIVIDEND TRACKER</div>
-                        <div class="cbah-card-body cbah-no-pad cbah-scroll-y" style="max-height: 600px;">
+                        <div class="cbah-card-body cbah-no-pad cbah-scroll-y cbah-inline-eb6e6d6f">
                             <table class="cbah-data-table cbah-table-hover">
                                 <thead><tr><th>Company Ticker</th><th>Dividend Amount</th><th>Closure Date</th><th>Payment Date</th></tr></thead>
                                 <tbody>
@@ -877,13 +981,15 @@ class CBAH_Public_View {
     }
 
     public function handle_ajax_data_request() {
-        if ( ! function_exists( 'get_field' ) ) { wp_send_json_error(); }
+        if ( ! cbah_is_acf_pro_active() || ! function_exists( 'get_field' ) ) { wp_send_json_error( array( 'message' => __( 'Advanced Custom Fields PRO is required.', 'spindle-market-research' ) ) ); }
         wp_send_json_success( $this->get_latest_analytics_matrix() );
     }
 
     // Display on homepage and other pages
-    public function render_homepage_snapshot() {    
-        if ( ! function_exists( 'get_field' ) ) return '';
+    public function render_homepage_snapshot() {
+        $this->enqueue_public_styles();
+
+        if ( ! cbah_is_acf_pro_active() || ! function_exists( 'get_field' ) ) return '';
         
         // Get the single latest market report
         $market = get_posts( array( 'post_type' => 'cbah_market_report', 'posts_per_page' => 1 ) );
@@ -933,20 +1039,34 @@ class CBAH_Public_View {
         $clean_l_pct = str_replace(array('+', '-', '%', ' '), '', $top_l['percentage']);
 
         // Turnover with intelligent auto-formatting
-        $raw_vol = get_field( 'turnover_volume', $m_id ) ?: '0';
-        $raw_val = get_field( 'turnover_value', $m_id ) ?: '0';
+        $raw_vol = trim( (string) get_field( 'turnover_volume', $m_id ) );
+        $raw_val = trim( (string) get_field( 'turnover_value', $m_id ) );
+        $has_volume = '' !== $raw_vol;
+        $has_value  = '' !== $raw_val;
         
-        $vol = $this->format_market_number($raw_vol);
-        $val = $this->format_market_number($raw_val);
+        $vol = $has_volume ? $this->format_market_number($raw_vol) : '';
+        $val = $has_value ? $this->format_market_number($raw_val) : '';
+        $raw_mcap = trim( (string) get_field( 'market_cap', $m_id ) );
+        $has_market_cap = '' !== $raw_mcap;
+        $market_cap_display = '';
+        if ( $has_market_cap ) {
+            if ( is_numeric( str_replace( ',', '', $raw_mcap ) ) ) {
+                $market_cap_display = '₦' . $this->format_market_number( $raw_mcap );
+            } else {
+                $market_cap_display = ( false === stripos( $raw_mcap, '₦' ) && false === stripos( $raw_mcap, '$' ) ) ? '₦' . $raw_mcap : $raw_mcap;
+            }
+        }
+
+        $snapshot_context = ( is_front_page() || is_home() ) ? 'cbah-snapshot-home' : 'cbah-snapshot-page';
 
         ob_start();
         ?>
-        <div class="marketdata-date" style="display: flex; justify-content: flex-end; align-items: center; font-size: 12px; color: #64748b; margin-bottom: 8px;">
-            <span class="dashicons dashicons-clock" style="margin-right: 4px; font-size: 14px; width: 14px; height: 14px;"></span>
-            Data as of: <strong class="mkt-date" style="margin-left: 4px;"><?php echo esc_html( $report_date ); ?></strong>
+        <div class="cbah-marketdata-date <?php echo esc_attr( $snapshot_context === 'cbah-snapshot-home' ? 'cbah-marketdata-date-home' : 'cbah-marketdata-date-page' ); ?>">
+            <span class="dashicons dashicons-clock"></span>
+            Data as of: <strong class="mkt-date"><?php echo esc_html( $report_date ); ?></strong>
         </div>
 
-        <div class="cbah-home-snapshot" style="margin-top: 0;">
+        <div class="cbah-home-snapshot <?php echo esc_attr( $snapshot_context . ( $has_market_cap ? ' cbah-snapshot-has-market-cap' : '' ) ); ?>">
             <div class="cbah-snap-item">
                 <span class="cbah-snap-label">NGX All-Share Index</span>
                 <span class="cbah-snap-value"><?php echo number_format( $close, 2 ); ?></span>
@@ -960,7 +1080,7 @@ class CBAH_Public_View {
                 <span class="cbah-snap-label">Top Gainer</span>
                 <span class="cbah-snap-value">
                     <?php echo esc_html( $top_g['ticker'] ); ?>
-                    <span style="font-size: 0.85em; font-weight: normal; margin-left: 4px; opacity: 0.9;">
+                    <span class="cbah-snap-price">
                         <?php echo esc_html( $top_g_price ); ?>
                     </span>
                 </span>
@@ -974,7 +1094,7 @@ class CBAH_Public_View {
                 <span class="cbah-snap-label">Top Loser</span>
                 <span class="cbah-snap-value">
                     <?php echo esc_html( $top_l['ticker'] ); ?>
-                    <span style="font-size: 0.85em; font-weight: normal; margin-left: 4px; opacity: 0.9;">
+                    <span class="cbah-snap-price">
                         <?php echo esc_html( $top_l_price ); ?>
                     </span>
                 </span>
@@ -984,11 +1104,36 @@ class CBAH_Public_View {
                 </span>
             </div>
             
-            <div class="cbah-snap-item">
-                <span class="cbah-snap-label">Volume / Value</span>
-                <span class="cbah-snap-value" style="font-size: 14px;"><?php echo esc_html( $vol ); ?> / ₦<?php echo esc_html( $val ); ?></span>
-                <span class="cbah-snap-change" style="color:#64748b;">Market Turnover</span>
-            </div>
+            <?php if ( $has_volume || $has_value || $has_market_cap ) : ?>
+                <?php
+                $metric_count = (int) $has_volume + (int) $has_value + (int) $has_market_cap;
+                $metric_labels = array();
+                $metric_values = array();
+                if ( $has_volume ) {
+                    $metric_labels[] = 'Volume';
+                    $metric_values[] = $vol;
+                }
+                if ( $has_value ) {
+                    $metric_labels[] = 'Value';
+                    $metric_values[] = '₦' . $val;
+                }
+                if ( $has_market_cap ) {
+                    $metric_labels[] = 'Cap';
+                    $metric_values[] = $market_cap_display;
+                }
+                ?>
+                <div class="cbah-snap-item cbah-snap-market-metrics cbah-snap-metrics-count-<?php echo esc_attr( $metric_count ); ?>">
+                    <span class="cbah-snap-market-title">MARKET TURNOVER &amp; SIZE</span>
+                    <div class="cbah-snap-metrics-grid">
+                        <?php foreach ( $metric_labels as $index => $metric_label ) : ?>
+                            <div class="cbah-snap-metric-cell">
+                                <span class="cbah-snap-metric-label"><?php echo esc_html( $metric_label ); ?></span>
+                                <span class="cbah-snap-metric-value"><?php echo esc_html( $metric_values[ $index ] ); ?></span>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
         <?php
         return ob_get_clean();
@@ -996,7 +1141,18 @@ class CBAH_Public_View {
 
      // Market Ticker
     public function render_market_ticker() {
-        if ( ! function_exists( 'get_field' ) ) return '';
+        $this->enqueue_public_styles();
+
+        $settings = CBAH_Settings::get_settings();
+        wp_enqueue_script(
+            'cbah-ticker',
+            CBAH_PLUGIN_URL . 'public/js/cbah-ticker.js',
+            array(),
+            CBAH_VERSION,
+            true
+        );
+
+        if ( ! cbah_is_acf_pro_active() || ! function_exists( 'get_field' ) ) return '';
         
         $market = get_posts( array( 'post_type' => 'cbah_market_report', 'posts_per_page' => 1 ) );
         if ( empty( $market ) ) return '';
@@ -1039,17 +1195,16 @@ class CBAH_Public_View {
 
         ob_start();
         ?>
-        <div class="cbdata_date" style="display: flex; align-items: stretch; overflow: hidden; background: #ffffff; border: 0; border-radius: 0; margin-bottom: 0;">
-            
-            <div style="background: #0f172a; color: #f8fafc; padding: 12px 20px; font-size: 12px; font-weight: 600; white-space: nowrap; display: flex; align-items: center; box-shadow: 3px 0 10px rgba(0,0,0,0.1); z-index: 2;">
-                <span class="dashicons dashicons-clock" style="margin-right: 6px; font-size: 13px; width: 14px; height: 14px; color: #94a3b8;"></span>
+        <div class="cbah-price-ticker cbah-ticker-full-bleed" data-ticker-speed="<?php echo esc_attr( isset( $settings['ticker_speed'] ) ? (int) $settings['ticker_speed'] : 60 ); ?>">
+            <div class="cbah-ticker-date">
+                <span class="dashicons dashicons-clock"></span>
                 <?php echo esc_html( $report_date ); ?>
             </div>
 
-            <div class="cbah-ticker-wrapper" style="flex-grow: 1; padding: 12px 0; border: none; background: transparent;">
+            <div class="cbah-ticker-wrapper">
                 <div class="cbah-ticker-track">
-                    <div class="cbah-ticker-group"><?php echo wp_kses_post( $ticker_string ); ?></div>
-                    <div class="cbah-ticker-group" aria-hidden="true"><?php echo wp_kses_post( $ticker_string ); ?></div>
+                    <div class="cbah-ticker-group cbah-ticker-group-primary"><?php echo wp_kses_post( $ticker_string ); ?></div>
+                    <div class="cbah-ticker-group cbah-ticker-group-secondary" aria-hidden="true"><?php echo wp_kses_post( $ticker_string ); ?></div>
                 </div>
             </div>
         </div>

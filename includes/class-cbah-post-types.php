@@ -35,6 +35,7 @@ class CBAH_Post_Types {
         
         // 1. HOOK TO CREATE THE CUSTOM DASHBOARD MENU
         add_action( 'admin_menu', array( $this, 'create_dashboard_menu' ) );
+        add_action( 'admin_menu', array( $this, 'order_research_hub_submenu' ), 999 );
 
         // 2. DEFINE YOUR 6 REPORTS
         $registries = array(
@@ -91,6 +92,38 @@ class CBAH_Post_Types {
         );
     }
 
+    /**
+     * Keep the dashboard as the first Research Hub submenu, followed by Settings,
+     * then the research content types in their existing order.
+     *
+     * @return void
+     */
+    public function order_research_hub_submenu() {
+        global $submenu;
+
+        if ( empty( $submenu['cbah-research-hub'] ) || ! is_array( $submenu['cbah-research-hub'] ) ) {
+            return;
+        }
+
+        $items = $submenu['cbah-research-hub'];
+        $dashboard = array();
+        $settings = array();
+        $others = array();
+
+        foreach ( $items as $item ) {
+            $slug = isset( $item[2] ) ? $item[2] : '';
+            if ( 'cbah-research-hub' === $slug ) {
+                $dashboard[] = $item;
+            } elseif ( 'cbah-settings' === $slug ) {
+                $settings[] = $item;
+            } else {
+                $others[] = $item;
+            }
+        }
+
+        $submenu['cbah-research-hub'] = array_merge( $dashboard, $settings, $others );
+    }
+
     // 5. RENDER THE PREMIUM DASHBOARD (Beautiful UI is unchanged)
     public function render_dashboard_view() {
         
@@ -133,7 +166,7 @@ class CBAH_Post_Types {
             'post_status' => 'publish'
         ));
 
-        if ( !empty($latest_market) && function_exists('get_field') ) {
+        if ( ! empty( $latest_market ) && cbah_is_acf_pro_active() && function_exists( 'get_field' ) ) {
             $m_id = $latest_market[0]->ID;
             $gainers = get_field('market_gainers', $m_id) ?: array();
             $losers  = get_field('market_losers', $m_id) ?: array();
@@ -184,18 +217,26 @@ class CBAH_Post_Types {
         );
         ?>
         
-        <div class="wrap cbah-dashboard-wrap" style="margin-top: 20px; max-width: 1400px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <?php
+        $site_title = trim( (string) get_bloginfo( 'name' ) );
+        if ( '' === $site_title ) {
+            $site_title = 'Spindle Market Research Hub';
+        } else {
+            $site_title .= ' Research Hub';
+        }
+        ?>
+        <div class="wrap cbah-dashboard-wrap">
             
-            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px;">
+            <div class="cbah-dashboard-header">
                 <div>
-                    <h1 style="font-weight: 700; font-size: 28px; color: #0f172a; margin: 0 0 8px 0;"><?php echo esc_html( get_bloginfo( 'name' ) ); ?> Research Hub</h1>
-                    <p style="margin: 0; font-size: 15px; color: #64748b;">
-                        <?php echo esc_html("$greeting, $user_name. Here is your platform overview for $current_date."); ?>
+                    <h1 class="cbah-dashboard-title"><?php echo esc_html( $site_title ); ?></h1>
+                    <p class="cbah-dashboard-subtitle">
+                        <?php echo esc_html( "$greeting, $user_name. Here is your platform overview for $current_date." ); ?>
                     </p>
                 </div>
             </div>
 
-            <div style="margin-bottom: 30px; border-radius: 6px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); background-color: #ffffff;">
+            <div class="cbah-inline-25a11240">
                 <?php if ( !empty($tv_symbols) ) : ?>
                     <div class="tradingview-widget-container">
                         <div class="tradingview-widget-container__widget"></div>
@@ -203,46 +244,46 @@ class CBAH_Post_Types {
 
                     </div>
                 <?php else : ?>
-                    <div style="padding: 24px; text-align: center; background-color: #f8fafc; display: flex; flex-direction: column; align-items: center;">
-                        <span class="dashicons dashicons-chart-line" style="font-size: 32px; width: 32px; height: 32px; color: #94a3b8; margin-bottom: 12px;"></span>
-                        <p style="margin: 0; color: #475569; font-size: 14px; font-weight: 500;">No market data available yet.</p>
-                        <p style="margin: 4px 0 0 0; color: #64748b; font-size: 13px;">Please add a Daily Market Report to activate the live NGX ticker.</p>
+                    <div class="cbah-inline-59670f38">
+                        <span class="dashicons dashicons-chart-line cbah-inline-1ebfa731"></span>
+                        <p class="cbah-inline-c4e078e1">No market data available yet.</p>
+                        <p class="cbah-inline-69bc8b18">Please add a Daily Market Report to activate the live NGX ticker.</p>
                     </div>
                 <?php endif; ?>
             </div>
 
-            <div style="display: grid; grid-template-columns: 2.5fr 1fr; gap: 30px;">
+            <div class="cbah-inline-bf07a2f5">
                 
                 <div>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px;">
-                        <div style="background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; border-left: 4px solid #0ea5e9; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                            <h4 style="margin: 0 0 8px 0; color: #64748b; font-size: 13px; text-transform: uppercase;">Total Market Reports</h4>
-                            <span style="font-size: 28px; font-weight: 700; color: #0f172a;"><?php echo esc_html( $total_market ); ?></span>
+                    <div class="cbah-inline-35baa09f">
+                        <div class="cbah-inline-bf59e2ae">
+                            <h4 class="cbah-inline-8f35850d">Total Market Reports</h4>
+                            <span class="cbah-inline-74ad1f5a"><?php echo esc_html( $total_market ); ?></span>
                         </div>
-                        <div style="background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; border-left: 4px solid #10b981; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                            <h4 style="margin: 0 0 8px 0; color: #64748b; font-size: 13px; text-transform: uppercase;">Published This Week</h4>
-                            <span style="font-size: 28px; font-weight: 700; color: #0f172a;"><?php echo esc_html( $published_this_week ); ?></span>
+                        <div class="cbah-inline-4b3f93a8">
+                            <h4 class="cbah-inline-8f35850d">Published This Week</h4>
+                            <span class="cbah-inline-74ad1f5a"><?php echo esc_html( $published_this_week ); ?></span>
                         </div>
-                        <div style="background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; border-left: 4px solid #6366f1; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                            <h4 style="margin: 0 0 8px 0; color: #64748b; font-size: 13px; text-transform: uppercase;">Corporate Results</h4>
-                            <span style="font-size: 28px; font-weight: 700; color: #0f172a;"><?php echo esc_html( $total_corp ); ?></span>
+                        <div class="cbah-inline-6bdeaeeb">
+                            <h4 class="cbah-inline-8f35850d">Corporate Results</h4>
+                            <span class="cbah-inline-74ad1f5a"><?php echo esc_html( $total_corp ); ?></span>
                         </div>
                     </div>
 
-                    <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #1e293b;">Research Categories</h2>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                    <h2 class="cbah-inline-e5e4fa30">Research Categories</h2>
+                    <div class="cbah-inline-fa5a8685">
                         <?php foreach ( $boxes as $slug => $data ) : ?>
-                            <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 24px; border-radius: 8px; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'" onmouseout="this.style.boxShadow='none'">
-                                <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                                    <span class="dashicons <?php echo esc_attr( $data['icon'] ); ?>" style="font-size: 24px; width: 24px; height: 24px; color: #0f172a; margin-right: 12px;"></span>
-                                    <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #0f172a;"><?php echo esc_html( $data['title'] ); ?></h3>
+                            <div class="cbah-inline-85494db6">
+                                <div class="cbah-inline-7a07f30c">
+                                    <span class="dashicons <?php echo esc_attr( $data['icon'] ); ?> cbah-inline-448e4bc2"></span>
+                                    <h3 class="cbah-inline-5bcbbc55"><?php echo esc_html( $data['title'] ); ?></h3>
                                 </div>
-                                <p style="color: #64748b; margin-top: 0; font-size: 13px; line-height: 1.5; flex-grow: 1;">
+                                <p class="cbah-inline-467706a4">
                                     <?php echo esc_html( $data['desc'] ); ?>
                                 </p>
-                                <div style="margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 16px; display: flex; gap: 10px;">
-                                    <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=' . $slug ) ); ?>" class="button" style="width: 50%; text-align: center;">View All</a>
-                                    <a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=' . $slug ) ); ?>" class="button button-primary" style="width: 50%; text-align: center;">Add New</a>
+                                <div class="cbah-inline-8b39e52c">
+                                    <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=' . $slug ) ); ?>" class="button" class="cbah-inline-c16becd9">View All</a>
+                                    <a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=' . $slug ) ); ?>" class="button button-primary" class="cbah-inline-c16becd9">Add New</a>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -250,37 +291,37 @@ class CBAH_Post_Types {
                 </div>
 
                 <div>
-                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; margin-bottom: 30px;">
-                        <h3 style="font-size: 16px; font-weight: 600; margin: 0 0 16px 0; color: #0f172a; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">Recent Activity</h3>
+                    <div class="cbah-inline-b4f4c2fe">
+                        <h3 class="cbah-inline-5120d8c3">Recent Activity</h3>
                         <?php if ( $recent_posts->have_posts() ) : ?>
-                            <ul style="list-style: none; padding: 0; margin: 0;">
+                            <ul class="cbah-inline-1908c8d8">
                                 <?php while ( $recent_posts->have_posts() ) : $recent_posts->the_post(); 
                                     $pt_obj = get_post_type_object( get_post_type() );
                                 ?>
-                                    <li style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;">
-                                        <a href="<?php echo esc_url( get_edit_post_link() ); ?>" style="text-decoration: none; font-weight: 600; color: #2271b1; display: block; margin-bottom: 4px;">
+                                    <li class="cbah-inline-a7bac389">
+                                        <a href="<?php echo esc_url( get_edit_post_link() ); ?>" class="cbah-inline-6efc1fac">
                                             <?php the_title(); ?>
                                         </a>
-                                        <span style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 2px 6px; border-radius: 4px;">
+                                        <span class="cbah-inline-7e5662ca">
                                             <?php echo esc_html( $pt_obj->labels->singular_name ); ?> &bull; <?php echo esc_html( get_the_modified_date() ); ?>
                                         </span>
                                     </li>
                                 <?php endwhile; wp_reset_postdata(); ?>
                             </ul>
                         <?php else : ?>
-                            <div style="text-align: center; padding: 20px 0;">
-                                <span class="dashicons dashicons-welcome-write-blog" style="font-size: 24px; width: 24px; height: 24px; color: #cbd5e1; margin-bottom: 8px;"></span>
-                                <p style="color: #64748b; font-size: 13px; margin: 0;">No research reports published yet. Your recent uploads will appear here.</p>
+                            <div class="cbah-inline-a205c22e">
+                                <span class="dashicons dashicons-welcome-write-blog cbah-inline-13d5b5f7"></span>
+                                <p class="cbah-inline-42d8c5ff">No research reports published yet. Your recent uploads will appear here.</p>
                             </div>
                         <?php endif; ?>
                     </div>
 
-                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px;">
-                        <h3 style="font-size: 16px; font-weight: 600; margin: 0 0 16px 0; color: #0f172a;">Analyst Resources</h3>
-                        <ul style="list-style: none; padding: 0; margin: 0; font-size: 13px;">
-                            <li style="margin-bottom: 10px;"><a href="#" style="text-decoration: none; color: #2271b1;"><span class="dashicons dashicons-book" style="font-size: 14px; margin-top:2px;"></span> Formatting Guidelines</a></li>
-                            <li style="margin-bottom: 10px;"><a href="#" style="text-decoration: none; color: #2271b1;"><span class="dashicons dashicons-calendar-alt" style="font-size: 14px; margin-top:2px;"></span> NGX Market Holidays</a></li>
-                            <li style="margin-bottom: 0;"><a href="" style="text-decoration: none; color: #2271b1;"><span class="dashicons dashicons-email" style="font-size: 14px; margin-top:2px;"></span> IT Support Request</a></li>
+                    <div class="cbah-inline-6725b22f">
+                        <h3 class="cbah-inline-8e7aac1f">Research Resources</h3>
+                        <ul class="cbah-inline-024a6d28">
+                            <li class="cbah-inline-2d98adf5"><a class="cbah-inline-0f9243d8" href="<?php echo esc_url( admin_url( 'edit.php?post_type=cbah_market_report' ) ); ?>"><span class="dashicons dashicons-book cbah-inline-57052121"></span> Market Reports</a></li>
+                            <li class="cbah-inline-2d98adf5"><a class="cbah-inline-0f9243d8" href="<?php echo esc_url( admin_url( 'admin.php?page=cbah-settings' ) ); ?>"><span class="dashicons dashicons-admin-settings cbah-inline-57052121"></span> Market Data Settings</a></li>
+                            <li class="cbah-inline-648149ce"><a class="cbah-inline-0f9243d8" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=cbah_market_report' ) ); ?>"><span class="dashicons dashicons-plus-alt cbah-inline-57052121"></span> Add Research Report</a></li>
                         </ul>
                     </div>
                 </div>
