@@ -241,8 +241,8 @@ class CBAH_Post_Types {
                                     <?php echo esc_html( $data['desc'] ); ?>
                                 </p>
                                 <div style="margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 16px; display: flex; gap: 10px;">
-                                    <a href="<?php echo admin_url('edit.php?post_type=' . $slug); ?>" class="button" style="width: 50%; text-align: center;">View All</a>
-                                    <a href="<?php echo admin_url('post-new.php?post_type=' . $slug); ?>" class="button button-primary" style="width: 50%; text-align: center;">Add New</a>
+                                    <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=' . $slug ) ); ?>" class="button" style="width: 50%; text-align: center;">View All</a>
+                                    <a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=' . $slug ) ); ?>" class="button button-primary" style="width: 50%; text-align: center;">Add New</a>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -258,11 +258,11 @@ class CBAH_Post_Types {
                                     $pt_obj = get_post_type_object( get_post_type() );
                                 ?>
                                     <li style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;">
-                                        <a href="<?php echo get_edit_post_link(); ?>" style="text-decoration: none; font-weight: 600; color: #2271b1; display: block; margin-bottom: 4px;">
+                                        <a href="<?php echo esc_url( get_edit_post_link() ); ?>" style="text-decoration: none; font-weight: 600; color: #2271b1; display: block; margin-bottom: 4px;">
                                             <?php the_title(); ?>
                                         </a>
                                         <span style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 2px 6px; border-radius: 4px;">
-                                            <?php echo esc_html( $pt_obj->labels->singular_name ); ?> &bull; <?php echo get_the_modified_date(); ?>
+                                            <?php echo esc_html( $pt_obj->labels->singular_name ); ?> &bull; <?php echo esc_html( get_the_modified_date() ); ?>
                                         </span>
                                     </li>
                                 <?php endwhile; wp_reset_postdata(); ?>

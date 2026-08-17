@@ -128,9 +128,7 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
         function cbahExecuteStockSearch(val) {
             if (!val) return;
             val = val.toUpperCase();
-            const highlight = document.getElementById('market-data-highlight');
-            highlight.innerHTML = '<h3></h3><p style="color:#10b981; font-weight:600;">Active Symbol</p><p style="color:#64748b; font-size:12px;">Displaying live charts via TradingView engine.</p>';
-            highlight.querySelector('h3').textContent = val;
+            document.getElementById('market-data-highlight').innerHTML = `<h3>${val}</h3><p style="color:#10b981; font-weight:600;">Active Symbol</p><p style="color:#64748b; font-size:12px;">Displaying live charts via TradingView engine.</p>`;
             const chartContainer = document.getElementById('market-data-chart');
             chartContainer.innerHTML = '<div id="tv_chart_container" style="height:400px; width:100%;"></div>';
 
@@ -340,12 +338,6 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
             });
 
             // 5. LIVE AJAX SYNC
-            const escapeHtml = function(value) {
-                return String(value ?? '').replace(/[&<>'"]/g, function(char) {
-                    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' })[char];
-                });
-            };
-
             setInterval(function() {
                 fetch(window.CBAH_PUBLIC_DATA.ajaxUrl + '?action=cbah_get_live_metrics')
                 .then(response => response.json())
@@ -358,9 +350,9 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
                         d.gainers.forEach(item => { 
                             let cleanPct = item.percentage.toString().replace(/[\+\-\%\s]/g, '');
                             gHtml += `<tr>
-                                <td><strong>${escapeHtml(item.ticker)}</strong></td>
-                                <td style="text-align:center; color:#64748b;">${escapeHtml(item.price)}</td>
-                                <td style="text-align:right; padding-right: 10px;" class="cbah-txt-green">+${escapeHtml(cleanPct)}%</td>
+                                <td><strong>${item.ticker}</strong></td>
+                                <td style="text-align:center; color:#64748b;">${item.price}</td>
+                                <td style="text-align:right; padding-right: 10px;" class="cbah-txt-green">+${cleanPct}%</td>
                             </tr>`; 
                         });
                     } else { gHtml = '<tr><td colspan="3" class="cbah-empty">No Data</td></tr>'; }
@@ -372,9 +364,9 @@ const chartData = (window.CBAH_PUBLIC_DATA && window.CBAH_PUBLIC_DATA.chartData)
                         d.losers.forEach(item => { 
                             let cleanPct = item.percentage.toString().replace(/[\+\-\%\s]/g, '');
                             lHtml += `<tr>
-                                <td><strong>${escapeHtml(item.ticker)}</strong></td>
-                                <td style="text-align:center; color:#64748b;">${escapeHtml(item.price)}</td>
-                                <td style="text-align:right; padding-right: 10px;" class="cbah-txt-red">-${escapeHtml(cleanPct)}%</td>
+                                <td><strong>${item.ticker}</strong></td>
+                                <td style="text-align:center; color:#64748b;">${item.price}</td>
+                                <td style="text-align:right; padding-right: 10px;" class="cbah-txt-red">-${cleanPct}%</td>
                             </tr>`; 
                         });
                     } else { lHtml = '<tr><td colspan="3" class="cbah-empty">No Data</td></tr>'; }

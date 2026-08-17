@@ -1,8 +1,8 @@
-# Chart.js
+# Chart.js License
 
-Chart.js is licensed under the MIT License.
+Chart.js is distributed under the MIT License.
 
-Copyright (c) 2023 Chart.js Contributors
+Copyright (c) 2014-2024 Chart.js Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

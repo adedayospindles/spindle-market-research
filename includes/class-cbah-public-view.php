@@ -7,11 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 class CBAH_Public_View {
 
     public function enqueue_assets() {
+        // Chart.js is bundled locally so the plugin does not depend on a third-party CDN.
         wp_enqueue_script(
             'cbah-chartjs',
             CBAH_PLUGIN_URL . 'vendor/chartjs/chart.umd.min.js',
             array(),
-            '4.4.1',
+            '4.5.1',
             true
         );
 
@@ -314,7 +315,7 @@ class CBAH_Public_View {
                                                     $raw_mcap = trim($data['m_cap']);
                                                     // Check if numeric and format with the smart helper function
                                                     if (is_numeric(str_replace(',', '', $raw_mcap))) {
-                                                        echo '₦' . $this->format_market_number($raw_mcap);
+                                                        echo esc_html( '₦' . $this->format_market_number($raw_mcap) );
                                                     } else {
                                                         // Automatically prepend ₦ if custom text is provided without currency symbols
                                                         echo (stripos($raw_mcap, '₦') === false && stripos($raw_mcap, '$') === false) ? '₦' . esc_html($raw_mcap) : esc_html($raw_mcap);
@@ -419,11 +420,13 @@ class CBAH_Public_View {
                                         foreach ( $equities as $index => $eq ) {
                                             $analysis = get_field('company_analysis', $eq->ID) ?: 'No summary provided.';
                                             $file = get_field('report_file_url', $eq->ID) ?: '#';
-                                            $active = ($index === 0) ? 'class="active-row"' : '';
-                                            echo "<tr $active onclick='cbahLoadReport(this)' data-title='".esc_attr($eq->post_title)."' data-desc='".esc_attr($analysis)."' data-file='".esc_attr($file)."'>";
-                                            echo '<td>' . esc_html( $eq->post_title ) . '</td>';
-                                            echo '<td style="color:#64748b; font-size:12px;">' . get_the_date('M d, Y', $eq->ID) . '</td>';
-                                            echo '</tr>';
+                                            $active_class = ($index === 0) ? ' active-row' : '';
+                                            ?>
+                                            <tr class="<?php echo esc_attr( trim( $active_class ) ); ?>" onclick="cbahLoadReport(this)" data-title="<?php echo esc_attr( $eq->post_title ); ?>" data-desc="<?php echo esc_attr( $analysis ); ?>" data-file="<?php echo esc_attr( $file ); ?>">
+                                                <td><?php echo esc_html( $eq->post_title ); ?></td>
+                                                <td style="color:#64748b; font-size:12px;"><?php echo esc_html( get_the_date( 'M d, Y', $eq->ID ) ); ?></td>
+                                            </tr>
+                                            <?php
                                         }
                                     } else { 
                                         echo '<tr><td colspan="2" class="cbah-empty">No reports available.</td></tr>'; 
@@ -479,17 +482,23 @@ class CBAH_Public_View {
                                             $date = get_the_date('M d, Y', $sp->ID);
                                             
                                             $raw_content = $sp->post_content ?: 'No general overview provided for this report.';
-                                            $content = apply_filters('the_content', $raw_content);
+                                            $content = apply_filters(
+                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Intentional use of the WordPress core the_content filter.
+                                                'the_content',
+                                                $raw_content
+                                            ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Intentionally use WordPress core content filter.
                                             
                                             $main_pdf = get_field('main_sector_report_url', $sp->ID) ?: '#';
 
-                                            $active = ($index === 0) ? 'class="active-row"' : '';
-                                            echo "<tr $active onclick='cbahLoadSectorPost(this)' data-title='".esc_attr($title)."' data-mainpdf='".esc_attr($main_pdf)."'>";
+                                            $active_class = ($index === 0) ? ' active-row' : '';
+                                            ?>
+                                            <tr class="<?php echo esc_attr( trim( $active_class ) ); ?>" onclick="cbahLoadSectorPost(this)" data-title="<?php echo esc_attr( $title ); ?>" data-mainpdf="<?php echo esc_attr( $main_pdf ); ?>">
+                                            <?php
                                             echo '<td><strong>' . esc_html( $title ) . '</strong></td>';
                                             echo '<td style="color:#64748b; font-size:12px;">' . esc_html( $date ) . '</td>';
                                             
                                             echo "<td style='display:none;' class='hidden-payload'>";
-                                            echo "<div class='sp-content'>" . $content . "</div>";
+                                            echo "<div class='sp-content'>" . wp_kses_post( $content ) . "</div>";
                                             
                                             // SECTOR REPEATER ITEMS
                                             $repeater = get_field('sector_breakdown_reports', $sp->ID);
@@ -509,7 +518,9 @@ class CBAH_Public_View {
                                                     echo "<div class='cbah-sector-toggle-card' data-name='".esc_attr($s_name)."'>";
                                                     echo "<div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #f1f5f9; padding-bottom:8px;'>";
                                                     echo "<h3 style='margin:0; font-size:14px; color:#0f172a;'>" . esc_html($s_name) . "</h3>";
-                                                    echo "<span class='{$badge}' style='background:#f8fafc; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:700;'>" . esc_html($s_rec) . "</span>";
+                                                    ?>
+                                                    <span class="<?php echo esc_attr( $badge ); ?>" style="background:#f8fafc; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:700;"><?php echo esc_html( $s_rec ); ?></span>
+                                                    <?php
                                                     echo "</div>";
                                                     
                                                     if ( $s_driv ) {
@@ -596,7 +607,12 @@ class CBAH_Public_View {
                                             $date = get_the_date('M d, Y', $mac->ID);
                                             
                                             $raw_content = $mac->post_content ?: 'No general overview provided for this report.';
-                                            $content = apply_filters('the_content', $raw_content);
+                                            $content = wpautop(wp_kses_post($raw_content));
+                                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Intentional use of the WordPress core the_content filter.
+                                           /*  $content = apply_filters(
+                                                'the_content',
+                                                $raw_content
+                                            );  */// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Intentionally use WordPress core content filter.
                                             
                                             $inf = get_field('macro_inflation', $mac->ID) ?: 'N/A';
                                             $int = get_field('macro_interest_rate', $mac->ID) ?: 'N/A';
@@ -604,13 +620,15 @@ class CBAH_Public_View {
                                             $gov = get_field('government_policies', $mac->ID) ?: 'No government policies or overview provided for this report.';
                                             $file = get_field('macro_report_url', $mac->ID) ?: '#';
 
-                                            $active = ($index === 0) ? 'class="active-row"' : '';
-                                            echo "<tr $active onclick='cbahLoadMacroPost(this)' data-title='".esc_attr($title)."' data-file='".esc_attr($file)."'>";
+                                            $active_class = ($index === 0) ? ' active-row' : '';
+                                            ?>
+                                            <tr class="<?php echo esc_attr( trim( $active_class ) ); ?>" onclick="cbahLoadMacroPost(this)" data-title="<?php echo esc_attr( $title ); ?>" data-file="<?php echo esc_attr( $file ); ?>">
+                                            <?php
                                             echo '<td>' . esc_html( $title ) . '</td>';
                                             echo '<td style="color:#64748b; font-size:12px;">' . esc_html( $date ) . '</td>';
                                             
                                             echo "<td style='display:none;' class='hidden-payload'>";
-                                            echo "<div class='mac-content'>" . $content . "</div>";
+                                            echo "<div class='mac-content'>" . wp_kses_post( $content ) . "</div>";
                                             echo "<div class='mac-inf'>" . esc_html($inf) . "</div>";
                                             echo "<div class='mac-int'>" . esc_html($int) . "</div>";
                                             echo "<div class='mac-crude'>" . esc_html($crude) . "</div>";
@@ -932,8 +950,8 @@ class CBAH_Public_View {
             <div class="cbah-snap-item">
                 <span class="cbah-snap-label">NGX All-Share Index</span>
                 <span class="cbah-snap-value"><?php echo number_format( $close, 2 ); ?></span>
-                <span class="cbah-snap-change <?php echo $asi_color; ?>">
-                    <span class="dashicons <?php echo $asi_icon; ?>"></span> 
+                <span class="cbah-snap-change <?php echo esc_attr( $asi_color ); ?>">
+                    <span class="dashicons <?php echo esc_attr( $asi_icon ); ?>"></span> 
                     <?php echo number_format( abs( $pct ), 2 ); ?>%
                 </span>
             </div>
@@ -1030,8 +1048,8 @@ class CBAH_Public_View {
 
             <div class="cbah-ticker-wrapper" style="flex-grow: 1; padding: 12px 0; border: none; background: transparent;">
                 <div class="cbah-ticker-track">
-                    <div class="cbah-ticker-group"><?php echo $ticker_string; ?></div>
-                    <div class="cbah-ticker-group" aria-hidden="true"><?php echo $ticker_string; ?></div>
+                    <div class="cbah-ticker-group"><?php echo wp_kses_post( $ticker_string ); ?></div>
+                    <div class="cbah-ticker-group" aria-hidden="true"><?php echo wp_kses_post( $ticker_string ); ?></div>
                 </div>
             </div>
         </div>

@@ -1,16 +1,14 @@
 <?php
 /**
  * Plugin Name:       Spindle Market Research Hub
- * Description:       Financial research dashboard for NGX market data, reports, stock charts, dividends, sector performance, and macroeconomic indicators.
+ * Description:       An enterprise-grade financial dashboard and market analysis platform. Seamlessly integrate live NGX market data, TradingView advanced charts, and Chart.js analytics into WordPress. Features include real-time stock screeners, top gainers/losers, dividend tracking, and macroeconomic indicators. Built for financial analysts, brokers, and investment platforms.
  * Version:           1.8.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Adedayo Agboola & ASA Solutions Limited
- * Plugin URI:        https://github.com/adedayospindles/spindle-market-research
- * Author URI:        https://github.com/adedayospindles
  * License:           GPL-2.0+
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       spindle-market-research-hub
+ * Text Domain:       spindle-market-research
  */
 
 
@@ -40,7 +38,7 @@ register_activation_hook( __FILE__, function() {
 /**
  * Initialize Modular Objects
  */
-function run_spindle_market_research_hub() {
+function cbah_run_spindle_market_research_hub() {
     // 1. Core Post Types Engine
     $post_types = new CBAH_Post_Types();
     add_action( 'init', array( $post_types, 'register_structures' ) );
@@ -57,11 +55,11 @@ function run_spindle_market_research_hub() {
     // from being loaded globally on unrelated pages.
 
     add_shortcode( 'market_research_dashboard', array( $public_view, 'render_dashboard' ) );
-    add_shortcode( 'capital_bancorp_home_snapshot', array( $public_view, 'render_homepage_snapshot' ) );
-    add_shortcode( 'capital_bancorp_ticker', array( $public_view, 'render_market_ticker' ) );
+    add_shortcode( 'market_research_home_snapshot', array( $public_view, 'render_homepage_snapshot' ) );
+    add_shortcode( 'market_research_price_ticker', array( $public_view, 'render_market_ticker' ) );
 
     // Real-Time AJAX Endpoint Listeners
     add_action( 'wp_ajax_cbah_get_live_metrics', array( $public_view, 'handle_ajax_data_request' ) );
     add_action( 'wp_ajax_nopriv_cbah_get_live_metrics', array( $public_view, 'handle_ajax_data_request' ) );
 }
-run_spindle_market_research_hub();
+cbah_run_spindle_market_research_hub();

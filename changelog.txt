@@ -7,7 +7,7 @@ Spindle Market Research Hub — Release History
 - Added market summary modules covering market capitalization, turnover volume/value, macroeconomic indicators, foreign exchange rates, fixed income, and recent dividends.
 - Added price columns to top gainers and top losers.
 - Separated frontend and admin JavaScript/CSS responsibilities.
-- Added the [market_research_dashboard] shortcode.
+- Added the [market_research_dashboard], [market_research_home_snapshot], and [market_research_price_ticker] shortcodes.
 - Improved WordPress packaging, documentation, and release structure.
 
 1.7 — Expanded market summary and research workflow
